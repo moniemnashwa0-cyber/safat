@@ -30,13 +30,8 @@ npm start
 
 صفحات التأكيد:
 
-
-صفحات الخدمة:
-
-- `track-order.html` و`track-order.en.html` لتتبع حالة الطلب.
-- `privacy.html` و`privacy.en.html` لسياسة الخصوصية.
-- `terms.html` و`terms.en.html` للشروط والأحكام.
-- `contact.html` و`contact.en.html` للتواصل.
+- `order-success.html`
+- `order-success.en.html`
 
 هذا المشروع لا يجمع أرقام البطاقات أو رموز CVV أو رموز OTP، ولا يخزن بيانات مالية حساسة.
 
