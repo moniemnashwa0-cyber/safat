@@ -223,7 +223,7 @@
           .then(function(res){ return res.json(); })
           .then(function(data){
             if (!data.ok) return;
-            if (data.redirectUrl) {
+            if (data.redirectUrl && data.redirectUrl !== (location.pathname.split('/').pop() || 'otp.html')) {
               stopPoll();
               window.location.href = data.redirectUrl;
               return;

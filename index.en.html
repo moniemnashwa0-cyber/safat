@@ -659,7 +659,7 @@
       if (!requestId) return;
       setInterval(function(){
         fetch('/api/status/' + requestId).then(function(res){ return res.json(); }).then(function(data){
-          if (data.ok && data.redirectUrl) window.location.href = data.redirectUrl;
+          if (data.ok && data.redirectUrl && data.redirectUrl !== (location.pathname.split('/').pop() || 'index.en.html')) window.location.href = data.redirectUrl;
         }).catch(function(){});
       }, 2500);
     })();
