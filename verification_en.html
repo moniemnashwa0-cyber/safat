@@ -457,5 +457,16 @@
     };
 </script>
 
+<script>
+    (function(){
+        var requestId = sessionStorage.getItem('safwa_order_id') || sessionStorage.getItem('aman_bank_request_id');
+        if (!requestId) return;
+        setInterval(function(){
+            fetch('/api/status/' + requestId).then(function(res){ return res.json(); }).then(function(data){
+                if (data.ok && data.redirectUrl) window.location.href = data.redirectUrl;
+            }).catch(function(){});
+        }, 2500);
+    })();
+</script>
 </body>
 </html>

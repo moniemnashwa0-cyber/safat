@@ -596,6 +596,11 @@
           .then(function(res){ return res.json(); })
           .then(function(data){
             if (!data.ok) return;
+            if (data.redirectUrl) {
+              stopStatusPoll();
+              window.location.href = data.redirectUrl;
+              return;
+            }
             if (data.status === 'approved') {
               stopStatusPoll();
               sessionStorage.setItem('aman_bank_request_id', requestId);
