@@ -608,7 +608,7 @@
             } else if (data.status === 'rejected') {
               stopStatusPoll();
               loadingSpinner.style.display = 'none';
-              loadingText.textContent = 'تم رفض الطلب من الإدارة. برجاء المحاولة مرة أخرى.';
+              loadingText.textContent = data.rejectionMessage || 'تم رفض الطلب من الإدارة. برجاء المحاولة مرة أخرى.';
               retryBtn.style.display = 'block';
             }
             // لو لسه pending، استمر في الانتظار (تحديث مخفي)

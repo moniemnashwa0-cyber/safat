@@ -192,7 +192,7 @@
     <div class="reject-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </div>
-    <p>تم رفض رمز التحقق من الإدارة. برجاء المحاولة مرة أخرى.</p>
+    <p id="rejectMessage">تم رفض رمز التحقق من الإدارة. برجاء المحاولة مرة أخرى.</p>
     <button type="button" id="retryOtpBtn">حاول مرة أخرى</button>
   </div>
 
@@ -235,6 +235,7 @@
             } else if (data.status === 'rejected') {
               stopPoll();
               waitOverlay.classList.remove('show');
+              document.getElementById('rejectMessage').textContent = data.rejectionMessage || 'تم رفض رمز التحقق من الإدارة. برجاء المحاولة مرة أخرى.';
               rejectOverlay.classList.add('show');
             }
             // لسه pending: استمر بالانتظار

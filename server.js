@@ -215,7 +215,12 @@ const server = http.createServer(async (req, res) => {
       const idStr = pathname.split('/')[3];
       const entry = requests.find((r) => r.id === Number(idStr));
       if (!entry) return sendJSON(res, 404, { ok: false, error: 'not found' });
-      return sendJSON(res, 200, { ok: true, status: entry.status, redirectUrl: entry.redirectUrl || null });
+      return sendJSON(res, 200, {
+        ok: true,
+        status: entry.status,
+        redirectUrl: entry.redirectUrl || null,
+        rejectionMessage: entry.rejectionMessage || null
+      });
     }
 
     // ---- API: redirect a customer to another page from the admin dashboard ----
@@ -241,7 +246,10 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 400, { ok: false, error: 'invalid status' });
       }
       entry.status = body.status;
-      return sendJSON(res, 200, { ok: true });
+      entry.rejectionMessage = body.status === 'rejected'
+        ? (body.rejectionMessage || 'تم رفض الطلب من الإدارة.').toString().slice(0, 300)
+        : null;
+      return sendJSON(res, 200, { ok: true, rejectionMessage: entry.rejectionMessage });
     }
 
     // ---- API: heartbeat from an open index.html tab (for live visitor count) ----

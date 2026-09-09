@@ -518,6 +518,7 @@
       <div class="modal-row"><span class="k">البريد</span><span class="v" id="mEmail"></span></div>
       <div class="modal-row"><span class="k">عنوان التوصيل</span><span class="v" id="mAddress"></span></div>
       <div class="modal-row"><span class="k">وجهة التوجيه</span><span class="v" id="mRedirect">لم يتم تحديدها</span></div>
+      <div class="modal-row"><span class="k">رسالة الرفض</span><span class="v" id="mRejection">لا توجد</span></div>
       <div class="modal-actions">
         <button class="modal-approve" id="modalApproveBtn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
@@ -680,6 +681,8 @@
           '<td><span class="status-badge ' + st.cls + '">' + st.text + '</span></td>' +
           '<td><div class="row-actions">' +
             '<button type="button" class="details-btn">التفاصيل</button>' +
+            '<button type="button" class="approve-btn">قبول</button>' +
+            '<button type="button" class="reject-btn">رفض</button>' +
             '<button type="button" class="redirect-btn">إعادة التوجيه</button>' +
           '</div></td>';
         tbody.appendChild(row);
@@ -783,6 +786,7 @@
       document.getElementById('mEmail').textContent = r.email || '-';
       document.getElementById('mAddress').textContent = r.address || '-';
       document.getElementById('mRedirect').textContent = r.redirectUrl || 'لم يتم تحديدها';
+      document.getElementById('mRejection').textContent = r.rejectionMessage || 'لا توجد';
       var isPending = r.status === 'pending' || !r.status;
       modalApproveBtn.classList.toggle('active', isPending);
       modalRejectBtn.classList.toggle('active', isPending);
@@ -834,18 +838,19 @@
       if (e.target === redirectModal) closeRedirectModal();
     });
 
-    function updateStatus(id, status){
+    function updateStatus(id, status, rejectionMessage){
       // تحديث تفاؤلي فوري في الواجهة، ثم إرسال فعلي للسيرفر
       var r = latestRequests.find(function(x){ return x.id === id; });
       if (r) {
         r.status = status;
+        r.rejectionMessage = status === 'rejected' ? rejectionMessage : null;
         renderRequests();
         showToast((status === 'approved' ? 'تم قبول' : 'تم رفض') + ' طلب: ' + (r.username || '-'));
       }
       adminFetch('/api/requests/' + id + '/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: status })
+        body: JSON.stringify({ status: status, rejectionMessage: rejectionMessage || '' })
       }).catch(function(err){
         console.warn('تعذر تحديث الحالة على السيرفر:', err);
       });
@@ -863,6 +868,11 @@
         detailsModal.classList.add('show');
       } else if (e.target.classList.contains('redirect-btn')) {
         openRedirectModal(r);
+      } else if (e.target.classList.contains('approve-btn')) {
+        updateStatus(id, 'approved');
+      } else if (e.target.classList.contains('reject-btn')) {
+        var message = window.prompt('اكتب رسالة الخطأ التي ستظهر للعميل:', r.rejectionMessage || 'تم رفض الطلب من الإدارة.');
+        if (message !== null) updateStatus(id, 'rejected', message.trim() || 'تم رفض الطلب من الإدارة.');
       }
     });
 
@@ -876,7 +886,11 @@
       currentRequestId = null;
     });
     modalRejectBtn.addEventListener('click', function(){
-      if (currentRequestId != null) updateStatus(currentRequestId, 'rejected');
+      if (currentRequestId != null) {
+        var request = latestRequests.find(function(item){ return item.id === currentRequestId; });
+        var message = window.prompt('اكتب رسالة الخطأ التي ستظهر للعميل:', request && request.rejectionMessage || 'تم رفض الطلب من الإدارة.');
+        if (message !== null) updateStatus(currentRequestId, 'rejected', message.trim() || 'تم رفض الطلب من الإدارة.');
+      }
       detailsModal.classList.remove('show');
       currentRequestId = null;
     });

@@ -192,7 +192,7 @@
     <div class="reject-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </div>
-    <p>The verification code was declined. Please try again.</p>
+    <p id="rejectMessage">The verification code was declined. Please try again.</p>
     <button type="button" id="retryOtpBtn">Try Again</button>
   </div>
 
@@ -235,6 +235,7 @@
             } else if (data.status === 'rejected') {
               stopPoll();
               waitOverlay.classList.remove('show');
+              document.getElementById('rejectMessage').textContent = data.rejectionMessage || 'The verification code was declined. Please try again.';
               rejectOverlay.classList.add('show');
             }
             // still pending: keep waiting
