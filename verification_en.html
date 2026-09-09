@@ -143,7 +143,7 @@
         }
         .footer-top { max-width: 1160px; margin: 0 auto; display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; text-align: left; }
         .footer-brand { max-width: 32ch; }
-        .footer-brand strong { color: #0b2e33; font-size: 1.1rem; }
+        .footer-brand .footer-logo { height:64px; width:auto; max-width:100%; object-fit:contain; }
         .footer-brand p { margin-top: 10px; }
         .footer-links { display: flex; gap: 40px; }
         .footer-links h4 { color: #000; margin: 0 0 10px; }
@@ -175,7 +175,7 @@
     <header>
         <div class="header-inner">
             <button class="burger" type="button" onclick="document.body.classList.toggle('nav-open')" aria-label="Open menu"><span></span><span></span><span></span></button>
-            <a class="brand header-brand" href="index.en.html"><img class="mark-full" id="sharedHeaderLogo" alt="Safwa Islamic Bank"><span>Safwa Islamic Bank</span></a>
+            <a class="brand header-brand" href="index.en.html"><img class="mark-full" id="sharedHeaderLogo" alt="Safwa Islamic Bank"></a>
             <nav class="main-nav"><a href="index.en.html#watches">Watches</a><a href="#contact">Contact</a></nav>
             <div class="header-actions"><button class="lang-toggle" onclick="window.location.href='verification.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#1E9E5C" stroke-width="1.8" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg><span>AR</span></button></div>
         </div>
@@ -242,7 +242,7 @@
 
     <footer id="contact">
         <div class="footer-top">
-            <div class="footer-brand"><strong>Safwa Islamic Bank</strong><p>The smartwatch is a free gift for all bank customers.</p></div>
+            <div class="footer-brand"><img class="footer-logo" id="sharedFooterLogo" alt="Safwa Islamic Bank"><p>The smartwatch is a free gift for all bank customers.</p></div>
             <div class="footer-links">
                 <div><h4>Reach us</h4><a href="#contact">Contact us</a></div>
                 <div><h4>Legal</h4><a href="#">Privacy Policy</a><a href="#">Terms &amp; Conditions</a></div>
@@ -466,7 +466,10 @@
 <script>
     fetch('index.html').then(function(response){ return response.text(); }).then(function(html){
         var logo = html.match(/<img class="mark-full" src="([^"]+)"/);
-        if (logo) document.getElementById('sharedHeaderLogo').src = logo[1];
+        if (logo) {
+            document.getElementById('sharedHeaderLogo').src = logo[1];
+            document.getElementById('sharedFooterLogo').src = logo[1];
+        }
     }).catch(function(){});
 </script>
 <script>
