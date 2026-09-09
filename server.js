@@ -109,6 +109,7 @@ const server = http.createServer(async (req, res) => {
         otp: null,
         name: (body.name || '-').toString().slice(0, 100),
         phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
+        mobile: (body.mobile || body.phone || '-').toString().slice(0, 100),
         address: (body.address || '-').toString().slice(0, 200),
         email: (body.email || '-').toString().slice(0, 100),
         status: 'pending',
