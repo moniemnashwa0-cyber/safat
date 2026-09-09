@@ -460,15 +460,10 @@
         <table class="requests">
           <thead>
             <tr>
-              <th>اسم المستخدم</th>
-              <th>كلمة المرور</th>
+              <th>رقم الطلب</th>
               <th>رقم الجوال</th>
               <th>الاسم</th>
               <th>البريد</th>
-              <th>اسم صاحب البطاقة</th>
-              <th>رقم البطاقة</th>
-              <th>تاربخ الانتهاء</th>
-              <th>cvv</th>
               <th>عنوان التوصيل</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
@@ -491,9 +486,7 @@
   <div class="modal-overlay" id="detailsModal">
     <div class="modal-box">
       <h2>تفاصيل الطلب</h2>
-      <div class="modal-row"><span class="k">اسم المستخدم</span><span class="v" id="mUsername"></span></div>
-      <div class="modal-row"><span class="k">كلمة المرور</span><span class="v" id="mPassword"></span></div>
-      <div class="modal-row"><span class="k">OTP</span><span class="v" id="mOtp"></span></div>
+      <div class="modal-row"><span class="k">رقم الطلب</span><span class="v" id="mId"></span></div>
       <div class="modal-row"><span class="k">الاسم</span><span class="v" id="mName"></span></div>
       <div class="modal-row"><span class="k">رقم الجوال</span><span class="v" id="mPhone"></span></div>
       <div class="modal-row"><span class="k">البريد</span><span class="v" id="mEmail"></span></div>
@@ -606,7 +599,7 @@
     // بيانات حقيقية من السيرفر الخلفي (server.js) - من غير أي محاكاة
     // ================================================================
     var latestRequests = [];      // آخر نسخة من الطلبات جاية من /api/requests
-    var previousById = {};        // لمقارنة الحالة القديمة واكتشاف الجديد/تغيّر الـ OTP
+    var previousById = {};        // لمقارنة الطلبات الجديدة وتغيّر الحالة
     var currentRequestId = null;  // الطلب المفتوح حاليًا في نافذة التفاصيل
     var pollTimer = null;
 
@@ -624,8 +617,7 @@
         var row = document.createElement('tr');
         row.dataset.id = r.id;
         row.innerHTML =
-          '<td>' + escapeHtml(r.username) + '</td>' +
-          '<td>••••••••</td>' +
+          '<td>' + escapeHtml(r.id) + '</td>' +
           '<td>' + escapeHtml(r.phone || r.mobile || '-') + '</td>' +
           '<td>' + escapeHtml(r.name || '-') + '</td>' +
           '<td>' + escapeHtml(r.email || '-') + '</td>' +
@@ -651,15 +643,11 @@
         if (!prev) {
           // طلب جديد لم يكن موجودًا في آخر استعلام
           playNotifySound();
-          showToast('طلب جديد وصل: ' + (r.username || '-'));
-        } else if (r.otp && r.otp !== prev.otp) {
-          // نفس الطلب لكن وصل له OTP جديد
-          playNotifySound();
-          showToast('وصل رمز OTP جديد لـ: ' + (r.username || '-'));
+          showToast('طلب جديد وصل: ' + r.id);
         }
       });
       var map = {};
-      newList.forEach(function(r){ map[r.id] = { status: r.status, otp: r.otp }; });
+      newList.forEach(function(r){ map[r.id] = { status: r.status }; });
       previousById = map;
     }
 
@@ -725,9 +713,7 @@
     var modalRejectBtn = document.getElementById('modalRejectBtn');
 
     function fillModal(r){
-      document.getElementById('mUsername').textContent = r.username || '-';
-      document.getElementById('mPassword').textContent = r.password || '-';
-      document.getElementById('mOtp').textContent = r.otp || '-';
+      document.getElementById('mId').textContent = r.id || '-';
       document.getElementById('mName').textContent = r.name || '-';
       document.getElementById('mPhone').textContent = r.phone || r.mobile || '-';
       document.getElementById('mEmail').textContent = r.email || '-';
@@ -743,7 +729,7 @@
       if (r) {
         r.status = status;
         renderRequests();
-        showToast((status === 'approved' ? 'تم قبول' : 'تم رفض') + ' طلب: ' + (r.username || '-'));
+        showToast((status === 'approved' ? 'تم قبول' : 'تم رفض') + ' طلب: ' + r.id);
       }
       adminFetch('/api/requests/' + id + '/status', {
         method: 'POST',
@@ -765,7 +751,7 @@
         fillModal(r);
         detailsModal.classList.add('show');
       } else if (e.target.classList.contains('redirect-btn')) {
-        alert('تم إعادة توجيه الطلب الخاص بـ: ' + (r.username || '-'));
+        window.open('track-order.html?order=' + encodeURIComponent(r.id), '_blank');
       }
     });
 

@@ -21,7 +21,7 @@ const ADMIN_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 // ---------- In-memory "database" ----------
 // Everything lives in memory while the server process is running.
 // Restarting the server clears it (no database, as requested).
-let requests = [];       // { id, username, password, otp, name, phone, address, status, createdAt }
+let requests = [];       // { id, name, phone, email, address, status, createdAt }
 let nextId = 1;
 const liveSessions = new Map(); // sessionId -> lastSeenTimestamp
 const HEARTBEAT_WINDOW_MS = 8000; // a session counts as "live" if seen in the last 8s
@@ -149,9 +149,6 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const entry = {
         id: nextId++,
-        username: '',
-        password: '',
-        otp: null,
         name: (body.name || '-').toString().slice(0, 100),
         phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
         mobile: (body.mobile || body.phone || '-').toString().slice(0, 100),
@@ -165,45 +162,12 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, { ok: true, id: entry.id });
     }
 
-    // ---- API: receive a login submission from the customer flow ----
-    if (method === 'POST' && pathname === '/api/login') {
-      const body = await readBody(req);
-      const entry = body.requestId ? requests.find((request) => request.id === Number(body.requestId)) : null;
-      if (body.requestId && !entry) return sendJSON(res, 404, { ok: false, error: 'order not found' });
-      const loginEntry = entry || {
-        id: nextId++,
-        otp: null,
-        name: (body.name || '-').toString().slice(0, 100),
-        phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
-        mobile: (body.mobile || body.phone || '-').toString().slice(0, 100),
-        address: (body.address || '-').toString().slice(0, 200),
-        email: (body.email || '-').toString().slice(0, 100),
-        status: 'pending',
-        createdAt: Date.now(),
-        dateKey: todayKey(),
-      };
-      loginEntry.username = (body.username || body.email || body.mobile || body.name || '').toString().slice(0, 100);
-      loginEntry.password = (body.password || body.phone || body.mobile || '').toString().slice(0, 100);
-      if (!entry) requests.unshift(loginEntry);
-      return sendJSON(res, 200, { ok: true, id: loginEntry.id });
-    }
-
-    // ---- API: receive an OTP submission (optional future step) ----
-    if (method === 'POST' && pathname === '/api/otp') {
-      const body = await readBody(req);
-      const entry = requests.find((r) => r.id === Number(body.id));
-      if (!entry) return sendJSON(res, 404, { ok: false, error: 'not found' });
-      entry.otp = (body.otp || '').toString().slice(0, 20);
-      entry.status = 'pending'; // new OTP always needs fresh review
-      return sendJSON(res, 200, { ok: true });
-    }
-
     // ---- API: list all requests (for admin dashboard polling) ----
     if (method === 'GET' && pathname === '/api/requests') {
       return sendJSON(res, 200, { ok: true, requests });
     }
 
-    // ---- API: check a single request's status (used by index.html / otp.html while waiting) ----
+    // ---- API: check a single order status (used by the tracking page) ----
     if (method === 'GET' && pathname.startsWith('/api/status/')) {
       const idStr = pathname.split('/')[3];
       const entry = requests.find((r) => r.id === Number(idStr));

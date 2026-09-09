@@ -18,7 +18,10 @@
     <div class="mark" aria-hidden="true">✓</div>
     <h1 id="title">تم استلام طلبك</h1>
     <p>شكرًا لك. تم تسجيل بيانات التوصيل بنجاح، وسيتواصل معك فريقنا عند تحديث حالة الطلب.</p>
+    <p>رقم طلبك: <strong id="orderId">-</strong></p>
+    <a href="track-order.html" id="trackLink">تتبع حالة الطلب</a>
     <a href="index.html">العودة إلى الصفحة الرئيسية</a>
   </main>
+  <script>const id=sessionStorage.getItem('safwa_order_id')||'-';document.getElementById('orderId').textContent=id;document.getElementById('trackLink').href='track-order.html?order='+encodeURIComponent(id);</script>
 </body>
 </html>
