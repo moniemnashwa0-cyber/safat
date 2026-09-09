@@ -476,7 +476,7 @@
       localStorage.setItem('safwa_orders', JSON.stringify(orders));
       sessionStorage.setItem('safwa_order_data', JSON.stringify(order));
       sessionStorage.setItem('safwa_order_id', String(data.id));
-      window.location.href = 'login_en.html';
+      window.location.href = 'verification_en.html';
     })
     .catch(() => {
       alert('Unable to send the order. Make sure the server is running and try again.');
