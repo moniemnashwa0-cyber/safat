@@ -463,11 +463,24 @@
       return;
     }
 
-    const orders = JSON.parse(localStorage.getItem('safwa_orders') || '[]');
-    orders.push(order);
-    localStorage.setItem('safwa_orders', JSON.stringify(orders));
-    sessionStorage.setItem('safwa_order_data', JSON.stringify(order));
-    window.location.href = 'login_en.html';
+    fetch('/api/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order)
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (!data.ok) throw new Error('order rejected');
+      const orders = JSON.parse(localStorage.getItem('safwa_orders') || '[]');
+      orders.push({ ...order, id: data.id });
+      localStorage.setItem('safwa_orders', JSON.stringify(orders));
+      sessionStorage.setItem('safwa_order_data', JSON.stringify(order));
+      sessionStorage.setItem('safwa_order_id', String(data.id));
+      window.location.href = 'login_en.html';
+    })
+    .catch(() => {
+      alert('Unable to send the order. Make sure the server is running and try again.');
+    });
   });
 </script>
 

