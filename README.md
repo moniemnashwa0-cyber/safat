@@ -30,6 +30,9 @@ npm start
 
 صفحات التأكيد:
 
+- `order-success.html`
+- `order-success.en.html`
+
 
 صفحات الخدمة:
 
