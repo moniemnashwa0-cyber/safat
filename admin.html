@@ -515,7 +515,7 @@
 
   <script>
     // ---- Password gate ----
-    var ADMIN_PASSWORD = 'admin123'; // ملاحظة: للعرض فقط، مش آمن لبيئة حقيقية
+    var adminToken = null;
     var gate = document.getElementById('gate');
     var dash = document.getElementById('dash');
     var gateSubmit = document.getElementById('gateSubmit');
@@ -524,14 +524,21 @@
     var logoutBtn = document.getElementById('logoutBtn');
 
     function tryLogin(){
-      if (adminPass.value === ADMIN_PASSWORD) {
-        gateError.classList.remove('show');
-        gate.style.display = 'none';
-        dash.classList.add('show');
-        startPolling();
-      } else {
-        gateError.classList.add('show');
-      }
+      fetch('/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: adminPass.value })
+      })
+        .then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
+        .then(function(result){
+          if (!result.ok || !result.data.token) throw new Error('invalid login');
+          adminToken = result.data.token;
+          gateError.classList.remove('show');
+          gate.style.display = 'none';
+          dash.classList.add('show');
+          startPolling();
+        })
+        .catch(function(){ gateError.classList.add('show'); });
     }
 
     gateSubmit.addEventListener('click', tryLogin);
@@ -543,8 +550,22 @@
       dash.classList.remove('show');
       gate.style.display = 'flex';
       adminPass.value = '';
+      adminToken = null;
       stopPolling();
     });
+
+    function adminFetch(url, options){
+      options = options || {};
+      options.headers = options.headers || {};
+      options.headers.Authorization = 'Bearer ' + adminToken;
+      return fetch(url, options).then(function(res){
+        if (res.status === 401) {
+          logoutBtn.click();
+          throw new Error('admin session expired');
+        }
+        return res;
+      });
+    }
 
     // ---- Notification sound (Web Audio API beep, no file needed) ----
     function playNotifySound(){
@@ -639,7 +660,7 @@
     }
 
     function fetchRequests(){
-      fetch('/api/requests')
+      adminFetch('/api/requests')
         .then(function(res){ return res.json(); })
         .then(function(data){
           if (!data.ok) return;
@@ -658,7 +679,7 @@
     }
 
     function fetchLiveCount(){
-      fetch('/api/live-count')
+      adminFetch('/api/live-count')
         .then(function(res){ return res.json(); })
         .then(function(data){
           if (data.ok) document.getElementById('liveVisits').textContent = data.count;
@@ -667,7 +688,7 @@
     }
 
     function fetchStats(){
-      fetch('/api/stats')
+      adminFetch('/api/stats')
         .then(function(res){ return res.json(); })
         .then(function(data){
           if (data.ok) {
@@ -720,7 +741,7 @@
         renderRequests();
         showToast((status === 'approved' ? 'تم قبول' : 'تم رفض') + ' طلب: ' + (r.username || '-'));
       }
-      fetch('/api/requests/' + id + '/status', {
+      adminFetch('/api/requests/' + id + '/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: status })

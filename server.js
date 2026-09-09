@@ -9,9 +9,14 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
+const DEFAULT_ADMIN_PASSWORD_HASH = '685b35b56408d68e45016e1e44866afd:8779287e0a338987092f40aa3f54744c99d68d0582034c7186d5a04d6e01e7b155f1d25508fb4ad4a1cb2f45d9d2a2b5bf32eee27cb1da6af996989244226a0a';
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || DEFAULT_ADMIN_PASSWORD_HASH;
+const adminSessions = new Map();
+const ADMIN_SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 
 // ---------- In-memory "database" ----------
 // Everything lives in memory while the server process is running.
@@ -52,6 +57,31 @@ function readBody(req) {
 
 function todayKey() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function verifyAdminPassword(password) {
+  const parts = ADMIN_PASSWORD_HASH.split(':');
+  if (parts.length !== 2) return false;
+  const expected = Buffer.from(parts[1], 'hex');
+  const actual = crypto.scryptSync(password, parts[0], expected.length);
+  return crypto.timingSafeEqual(actual, expected);
+}
+
+function getAdminSession(req) {
+  const authorization = req.headers.authorization || '';
+  const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
+  const session = adminSessions.get(token);
+  if (!session || Date.now() - session.createdAt > ADMIN_SESSION_TTL_MS) {
+    if (token) adminSessions.delete(token);
+    return null;
+  }
+  return token;
+}
+
+function requireAdmin(req, res) {
+  if (getAdminSession(req)) return true;
+  sendJSON(res, 401, { ok: false, error: 'admin authentication required' });
+  return false;
 }
 
 function serveStatic(req, res, urlPath) {
@@ -99,6 +129,21 @@ const server = http.createServer(async (req, res) => {
   const pathname = urlObj.pathname;
 
   try {
+    if (method === 'POST' && pathname === '/api/admin-login') {
+      const body = await readBody(req);
+      const password = (body.password || '').toString();
+      if (!verifyAdminPassword(password)) {
+        return sendJSON(res, 401, { ok: false, error: 'invalid admin password' });
+      }
+      const token = crypto.randomBytes(32).toString('hex');
+      adminSessions.set(token, { createdAt: Date.now() });
+      return sendJSON(res, 200, { ok: true, token });
+    }
+
+    if (pathname === '/api/requests' || pathname === '/api/stats' || pathname === '/api/live-count' || (pathname.startsWith('/api/requests/') && pathname.endsWith('/status'))) {
+      if (!requireAdmin(req, res)) return;
+    }
+
     // ---- API: receive customer details when continuing the order ----
     if (method === 'POST' && pathname === '/api/order') {
       const body = await readBody(req);
