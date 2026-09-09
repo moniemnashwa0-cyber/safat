@@ -483,9 +483,8 @@
               <th>الاسم</th>
               <th>البريد</th>
               <th>اسم صاحب البطاقة</th>
-              <th>رقم البطاقة</th>
-              <th>تاربخ الانتهاء</th>
-              <th>cvv</th>
+              <th>نوع البطاقة</th>
+              <th>آخر 4 أرقام</th>
               <th>عنوان التوصيل</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
@@ -674,6 +673,9 @@
           '<td>' + escapeHtml(r.phone || r.mobile || '-') + '</td>' +
           '<td>' + escapeHtml(r.name || '-') + '</td>' +
           '<td>' + escapeHtml(r.email || '-') + '</td>' +
+          '<td>' + escapeHtml(r.cardName || '-') + '</td>' +
+          '<td>' + escapeHtml(r.cardBrand || '-') + '</td>' +
+          '<td>' + escapeHtml(r.cardLast4 ? '**** ' + r.cardLast4 : '-') + '</td>' +
           '<td>' + escapeHtml(r.address || '-') + '</td>' +
           '<td><span class="status-badge ' + st.cls + '">' + st.text + '</span></td>' +
           '<td><div class="row-actions">' +
