@@ -451,12 +451,34 @@
   orderForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const order = {
-      name: document.getElementById('fullName').value,
-      mobile: document.getElementById('mobile').value,
-      email: document.getElementById('email').value,
-      address: document.getElementById('address').value,
+      name: document.getElementById('fullName').value.trim(),
+      phone: document.getElementById('mobile').value.trim(),
+      mobile: document.getElementById('mobile').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      address: document.getElementById('address').value.trim(),
       date: new Date().toISOString()
     };
+
+    if (!order.name || !order.mobile || !order.email || !order.address) {
+      return;
+    }
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: order.email,
+        password: order.mobile,
+        name: order.name,
+        phone: order.phone,
+        mobile: order.mobile,
+        email: order.email,
+        address: order.address
+      })
+    }).catch(function(){
+      console.warn('Unable to send order data to server');
+    });
+
     const orders = JSON.parse(localStorage.getItem('safwa_orders') || '[]');
     orders.push(order);
     localStorage.setItem('safwa_orders', JSON.stringify(orders));

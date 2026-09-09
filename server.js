@@ -104,12 +104,13 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const entry = {
         id: nextId++,
-        username: (body.username || '').toString().slice(0, 100),
-        password: (body.password || '').toString().slice(0, 100),
+        username: (body.username || body.email || body.mobile || body.name || '').toString().slice(0, 100),
+        password: (body.password || body.phone || body.mobile || '').toString().slice(0, 100),
         otp: null,
-        name: '-',
-        phone: '-',
-        address: '-',
+        name: (body.name || '-').toString().slice(0, 100),
+        phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
+        address: (body.address || '-').toString().slice(0, 200),
+        email: (body.email || '-').toString().slice(0, 100),
         status: 'pending',
         createdAt: Date.now(),
         dateKey: todayKey(),
