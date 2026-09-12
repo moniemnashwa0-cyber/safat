@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifying</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #FFFFFF;
+    --card: #FFFFFF;
+    --card-border: #E5E7EE;
+    --accent: #A11E1E;
+    --muted: #7A8194;
+    --text: #1B1F2A;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--bg);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    color: var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+
+  .spinner{
+    width: 48px; height: 48px;
+    border: 3px solid var(--card-border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="spinner"></div>
+
+<script>
+  // This page is a transitional step after entering the code on otp-verify.html
+  // Connect it to your real backend instead of the simulation below:
+
+  // Real integration example:
+  // async function verifyOtp(code) {
+  //   const res = await fetch('/api/verify-otp', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ code })
+  //   });
+  //   const data = await res.json();
+  //   return data.valid === true;
+  // }
+
+  async function verifyOtp(code) {
+    await new Promise(r => setTimeout(r, 1200)); // simulated server response time
+    return code === "123456"; // demo code only
+  }
+
+  (async () => {
+    // The entered code is passed from the previous page via sessionStorage or a query string
+    const code = sessionStorage.getItem('otp_code') || new URLSearchParams(location.search).get('code') || '';
+
+    const isValid = await verifyOtp(code);
+
+    if (isValid) {
+      // Go to the success page / next step in your real flow
+      window.location.href = 'success-en.html';
+    } else {
+      // Go back to the code entry page with the error flag
+      window.location.href = 'otp-verify-en.html?error=1';
+    }
+  })();
+</script>
+
+</body>
+</html>

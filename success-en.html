@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmed</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Inter:wght@400;500&display=swap');
+
+  :root{
+    --bg:#FFFFFF; --card-border:#E5E7EE; --text:#1B1F2A; --muted:#7A8194; --success:#2F9E6B;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; min-height:100vh; background:var(--bg);
+    font-family:'Inter', sans-serif; color:var(--text);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .card{
+    width:100%; max-width:380px; text-align:center;
+    background:#fff; border:1px solid var(--card-border);
+    border-radius:20px; padding:40px 30px;
+    box-shadow: 0 8px 30px rgba(20,20,30,0.06);
+  }
+  .check{
+    width:60px; height:60px; border-radius:50%;
+    background: rgba(47,158,107,0.10);
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 20px;
+  }
+  h1{ font-family:'Poppins', sans-serif; font-weight:900; font-size:21px; margin:0 0 8px; }
+  p{ color:var(--muted); font-size:14px; margin:0; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="check">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+      <path d="M5 13l4 4L19 7" stroke="#2F9E6B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h1>Verified successfully</h1>
+  <p>Your information has been verified.</p>
+</div>
+
+</body>
+</html>

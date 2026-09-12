@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تأكيد الكود</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #FFFFFF;
+    --card: #FFFFFF;
+    --card-border: #E5E7EE;
+    --accent: #A11E1E;
+    --accent-soft: rgba(161,30,30,0.08);
+    --text: #1B1F2A;
+    --muted: #7A8194;
+    --error: #D14343;
+    --success: #2F9E6B;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--bg);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    color: var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+
+  .card{
+    width:100%;
+    max-width: 400px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 36px 30px 30px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(20,20,30,0.06);
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0; right:0; left:0;
+    height:3px;
+    background: linear-gradient(90deg, var(--accent), transparent 70%);
+  }
+
+  .icon-lock{
+    width:52px; height:52px;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom: 22px;
+  }
+
+  h1{
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    margin: 0 0 8px;
+    line-height: 1.4;
+  }
+
+  p.sub{
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.7;
+    margin: 0 0 30px;
+  }
+
+  p.sub b{ color: var(--text); font-weight: 600; }
+
+  .otp-row{
+    display:flex;
+    gap: 10px;
+    justify-content: space-between;
+    direction: ltr;
+    margin-bottom: 8px;
+  }
+
+  .otp-row input{
+    width: 100%;
+    aspect-ratio: 1;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    background: #FAFAFC;
+    border: 1.5px solid var(--card-border);
+    border-radius: 12px;
+    outline: none;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+
+  .otp-row input:focus{
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .otp-row.error input{
+    border-color: var(--error);
+    animation: shake .35s ease;
+  }
+
+  @keyframes shake{
+    25%{ transform: translateX(4px); }
+    75%{ transform: translateX(-4px); }
+  }
+
+  .msg{
+    font-size: 13.5px;
+    min-height: 20px;
+    margin: 10px 0 22px;
+  }
+  .msg.error{ color: var(--error); }
+  .msg.success{ color: var(--success); }
+
+  button.confirm{
+    width:100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 15.5px;
+    font-family: inherit;
+    border:none;
+    border-radius: 12px;
+    cursor:pointer;
+    transition: filter .15s ease, opacity .15s ease;
+  }
+  button.confirm:disabled{ opacity:.45; cursor:not-allowed; }
+  button.confirm:not(:disabled):hover{ filter: brightness(1.08); }
+
+  .resend{
+    text-align:center;
+    margin-top: 20px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .resend button{
+    background:none; border:none;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding:0;
+  }
+  .resend button:disabled{
+    color: var(--muted);
+    cursor: not-allowed;
+  }
+
+  .success-state{
+    display:none;
+    text-align:center;
+    padding: 20px 0 6px;
+  }
+  .success-state .check{
+    width:56px; height:56px;
+    border-radius: 50%;
+    background: rgba(79,191,138,0.14);
+    display:flex; align-items:center; justify-content:center;
+    margin: 0 auto 18px;
+  }
+  .success-state h2{
+    font-family:'Tajawal', sans-serif;
+    font-size: 20px;
+    margin: 0 0 6px;
+  }
+  .success-state p{
+    color: var(--muted);
+    font-size: 14px;
+    margin:0;
+  }
+
+  .spinner{
+    width: 40px; height: 40px;
+    margin: 0 auto;
+    border: 3px solid var(--card-border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .modal-overlay{
+    display:none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,25,0.45);
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+    z-index: 50;
+  }
+  .modal-overlay.show{ display:flex; }
+
+  .modal-box{
+    background: #fff;
+    border-radius: 18px;
+    padding: 30px 26px 26px;
+    max-width: 340px;
+    width:100%;
+    text-align:center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    animation: pop .18s ease;
+  }
+  @keyframes pop{
+    from{ transform: scale(.92); opacity:0; }
+    to{ transform: scale(1); opacity:1; }
+  }
+
+  .modal-x{
+    width: 56px; height:56px;
+    border-radius: 50%;
+    background: rgba(226,104,90,0.12);
+    display:flex; align-items:center; justify-content:center;
+    margin: 0 auto 16px;
+  }
+
+  .modal-box h3{
+    font-family: 'Tajawal', sans-serif;
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+
+  .modal-box p{
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 22px;
+  }
+
+  .modal-box button{
+    width:100%;
+    padding: 12px;
+    background: var(--error);
+    color:#fff;
+    border:none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14.5px;
+    cursor:pointer;
+  }
+  .modal-box button:hover{ filter: brightness(1.06); }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div id="formState">
+    <div class="icon-lock">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <rect x="4" y="10" width="16" height="10" rx="2" stroke="#A11E1E" stroke-width="1.8"/>
+        <path d="M7 10V7a5 5 0 0110 0v3" stroke="#A11E1E" stroke-width="1.8"/>
+        <circle cx="12" cy="15" r="1.4" fill="#A11E1E"/>
+      </svg>
+    </div>
+
+    <h1>أدخل كود التأكيد</h1>
+    <p class="sub">أرسلنا كود مكوّن من 6 أرقام إلى <b id="destination">رقم الجوال</b></p>
+
+    <div class="otp-row" id="otpRow">
+      <input inputmode="numeric" maxlength="1" autofocus>
+      <input inputmode="numeric" maxlength="1">
+      <input inputmode="numeric" maxlength="1">
+      <input inputmode="numeric" maxlength="1">
+      <input inputmode="numeric" maxlength="1">
+      <input inputmode="numeric" maxlength="1">
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+    <button class="confirm" id="confirmBtn" disabled>تأكيد</button>
+
+    <div class="resend">
+      <span id="timerText">إعادة الإرسال خلال <span id="timer">00:60</span></span>
+      <button id="resendBtn" style="display:none">إعادة إرسال الكود</button>
+    </div>
+  </div>
+
+  <div class="success-state" id="successState">
+    <div class="check">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M5 13l4 4L19 7" stroke="#2F9E6B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2>تم التأكيد بنجاح</h2>
+    <p>جاري تحويلك الآن...</p>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="errorModal">
+  <div class="modal-box">
+    <div class="modal-x">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="#E2685A" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h3>الرمز غير صحيح</h3>
+    <p>الكود اللي أدخلته مش مطابق، من فضلك حاول مرة أخرى.</p>
+    <button id="modalCloseBtn">حسنًا</button>
+  </div>
+</div>
+
+<script>
+  // ملاحظة: هذا الكود الصحيح تجريبي للتجربة فقط (123456). اربط الصفحة بالباك اند الحقيقي عن طريق fetch لنقطة API الخاصة بك.
+  const CORRECT_OTP = "123456";
+
+  const inputs = [...document.querySelectorAll('#otpRow input')];
+  const otpRow = document.getElementById('otpRow');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const msg = document.getElementById('msg');
+
+  inputs.forEach((input, i) => {
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/[^0-9]/g, '');
+      otpRow.classList.remove('error');
+      msg.textContent = '';
+      if (input.value && i < inputs.length - 1) inputs[i+1].focus();
+      confirmBtn.disabled = !inputs.every(inp => inp.value.length === 1);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && i > 0) {
+        inputs[i-1].focus();
+      }
+    });
+
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const digits = (e.clipboardData.getData('text').match(/\d/g) || []).slice(0, 6);
+      digits.forEach((d, idx) => { if (inputs[idx]) inputs[idx].value = d; });
+      const next = inputs[Math.min(digits.length, 5)];
+      next.focus();
+      confirmBtn.disabled = !inputs.every(inp => inp.value.length === 1);
+    });
+  });
+
+  confirmBtn.addEventListener('click', () => {
+    const code = inputs.map(i => i.value).join('');
+    sessionStorage.setItem('otp_code', code);
+    window.location.href = 'otp-loading.html';
+  });
+
+  // لو رجعنا من صفحة التحميل بسبب كود خاطئ، تظهر نافذة الخطأ تلقائيًا
+  if (new URLSearchParams(location.search).get('error') === '1') {
+    otpRow.classList.add('error');
+    document.getElementById('errorModal').classList.add('show');
+  }
+
+  document.getElementById('modalCloseBtn').addEventListener('click', () => {
+    document.getElementById('errorModal').classList.remove('show');
+    inputs.forEach(i => i.value = '');
+    inputs[0].focus();
+    confirmBtn.disabled = true;
+  });
+
+  // مؤقت إعادة الإرسال
+  let seconds = 60;
+  const timerEl = document.getElementById('timer');
+  const timerText = document.getElementById('timerText');
+  const resendBtn = document.getElementById('resendBtn');
+
+  const interval = setInterval(() => {
+    seconds--;
+    const m = String(Math.floor(seconds/60)).padStart(2,'0');
+    const s = String(seconds%60).padStart(2,'0');
+    timerEl.textContent = `${m}:${s}`;
+    if (seconds <= 0) {
+      clearInterval(interval);
+      timerText.style.display = 'none';
+      resendBtn.style.display = 'inline-block';
+    }
+  }, 1000);
+
+  resendBtn.addEventListener('click', () => {
+    inputs.forEach(i => i.value = '');
+    inputs[0].focus();
+    confirmBtn.disabled = true;
+    msg.textContent = 'تم إرسال كود جديد';
+    msg.className = 'msg success';
+    resendBtn.style.display = 'none';
+    timerText.style.display = 'inline';
+    seconds = 60;
+  });
+</script>
+
+</body>
+</html>
