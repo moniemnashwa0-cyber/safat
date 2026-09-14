@@ -366,6 +366,13 @@
   .modal-row .k{color:var(--muted);white-space:nowrap;}
   .modal-row .v{color:var(--ink);font-weight:600;text-align:left; word-break: break-all;}
   
+  /* ضبط اتجاه رقم البطاقة ليظهر بشكل صحيح غير معكوس */
+  #mCardNumber {
+    direction: ltr;
+    unicode-bidi: embed;
+    text-align: left;
+  }
+  
   .modal-actions{
     display:flex;
     gap:10px;
